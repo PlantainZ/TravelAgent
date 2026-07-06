@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     """应用配置"""
 
     # 应用基本配置
-    app_name: str = "旅行助手alpha_0.0"
+    app_name: str = "正在建设alpha_0.0"
     app_version: str = "0.0.1"
     debug: bool = False
 
@@ -32,11 +32,11 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:3000"
 
     # 高德地图API配置
-    amap_api_key: str = ""
+    amap_api_key: str = os.getenv("AMAP_API_KEY")
 
     # Unsplash API配置
-    unsplash_access_key: str = ""
-    unsplash_secret_key: str = ""
+    unsplash_access_key: str=os.getenv("UNSPLASH_ACCESS_KEY")
+    unsplash_secret_key: str=os.getenv("UNSPLASH_SECRET_KEY")
 
     # LLM配置 (从环境变量读取,由HelloAgents管理)
     openai_api_key: str = ""

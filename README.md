@@ -101,7 +101,7 @@ pip install -r requirements.txt
 4. 配置环境变量
 
 ```bash
-cp .env.example .env
+cp .env .env
 # 编辑.env文件,填入你的API密钥
 ```
 
@@ -129,7 +129,7 @@ npm install
 
 ```bash
 # 创建.env文件, 填入高德地图Web API Key 和 Web端JS API Key
-cp .env.example .env
+cp .env .env
 ```
 
 4. 启动开发服务器
