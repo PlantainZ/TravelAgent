@@ -39,12 +39,12 @@ class Settings(BaseSettings):
     unsplash_secret_key: str=os.getenv("UNSPLASH_SECRET_KEY")
 
     # LLM配置 (从环境变量读取,由HelloAgents管理)
-    openai_api_key: str = ""
-    openai_base_url: str = "https://api.openai.com/v1"
-    openai_model: str = "gpt-4"
+    openai_api_key: str = os.getenv("LLM_API_KEY")
+    openai_base_url: str = os.getenv("LLM_BASE_URL")
+    openai_model: str = os.getenv("LLM_MODEL_ID")
 
     # 日志配置
-    log_level: str = "INFO"
+    log_level:str=os.getenv("LOG_LEVEL")
 
     class Config:
         env_file = ".env"
@@ -109,3 +109,4 @@ def print_config():
     print(f"LLM Model: {llm_model}")
     print(f"日志级别: {settings.log_level}")
 
+# print_config() # jlq_test

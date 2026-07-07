@@ -244,12 +244,14 @@ class MCPTool(Tool):
     def _discover_tools(self):
         """发现MCP服务器提供的所有工具"""
         try:
-            from hello_agents.protocols.mcp.client import MCPClient
+            # from hello_agents.protocols.mcp.client import MCPClient
+            from protocol.mcp.client import MCPClient
             import asyncio
 
             async def discover():
                 client_source = self.server if self.server else self.server_command
-                async with MCPClient(client_source, self.server_args, env=self.env) as client:
+                # async with MCPClient(client_source, self.server_args, env=self.env) as client:
+                async with MCPClient(client_source) as client: # jlq_fix
                     tools = await client.list_tools()
                     return tools
 
@@ -353,7 +355,8 @@ class MCPTool(Tool):
         Returns:
             操作结果
         """
-        from hello_agents.protocols.mcp.client import MCPClient
+        # from hello_agents.protocols.mcp.client import MCPClient
+        from protocol.mcp.client import MCPClient
 
         # 智能推断action：如果没有action但有tool_name，自动设置为call_tool
         action = parameters.get("action", "").lower()
@@ -367,7 +370,8 @@ class MCPTool(Tool):
         try:
             # 使用增强的异步客户端
             import asyncio
-            from hello_agents.protocols.mcp.client import MCPClient
+            # from hello_agents.protocols.mcp.client import MCPClient
+            from protocol.mcp.client import MCPClient
 
             async def run_mcp_operation():
                 # 根据配置选择客户端创建方式
@@ -378,7 +382,8 @@ class MCPTool(Tool):
                     # 使用外部服务器命令
                     client_source = self.server_command
 
-                async with MCPClient(client_source, self.server_args, env=self.env) as client:
+                # async with MCPClient(client_source, self.server_args, env=self.env) as client:
+                async with MCPClient(client_source) as client: # jlq_fix
                     if action == "list_tools":
                         tools = await client.list_tools()
                         if not tools:
@@ -518,7 +523,7 @@ class A2ATool(Tool):
     - 发送自定义消息
 
     使用示例:
-        >>> from hello_agents.tools.builtin import A2ATool
+        >>> from tools.builtin import A2ATool
         >>> # 连接到 A2A Agent（使用默认名称）
         >>> tool = A2ATool(agent_url="http://localhost:5000")
         >>> # 连接到 A2A Agent（自定义名称和描述）
@@ -568,7 +573,7 @@ class A2ATool(Tool):
             操作结果
         """
         try:
-            from hello_agents.protocols.a2a.implementation import A2AClient, A2A_AVAILABLE
+            from protocols.a2a.implementation import A2AClient, A2A_AVAILABLE
             if not A2A_AVAILABLE:
                 return ("错误：需要安装 a2a-sdk 库\n"
                        "安装命令: pip install a2a-sdk\n"
@@ -680,7 +685,7 @@ class ANPTool(Tool):
             name=name,
             description=description
         )
-        from hello_agents.protocols.anp.implementation import ANPDiscovery, ANPNetwork
+        from protocols.anp.implementation import ANPDiscovery, ANPNetwork
         self._discovery = discovery if discovery is not None else ANPDiscovery()
         self._network = network if network is not None else ANPNetwork()
         

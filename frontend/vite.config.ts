@@ -14,7 +14,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:8000', // jlq_pins : 将请求转发到8000端口
         changeOrigin: true
       }
     }
