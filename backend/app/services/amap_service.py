@@ -4,8 +4,7 @@ from typing import List, Dict, Any, Optional
 
 # jlq_crt # =====================================
 # from hello_agents.tools import MCPTool
-# from tools.builtin.protocol_tools import MCPTool
-from fastmcp import MCPTool
+from tools.builtin.protocol_tools import MCPTool
 # ===============================================
 
 from ..config import get_settings
