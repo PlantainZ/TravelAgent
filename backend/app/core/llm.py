@@ -10,7 +10,7 @@ from .exceptions import HelloAgentsException
 SUPPORTED_PROVIDERS = Literal[
     "openai", "deepseek", "qwen", "modelscope",
     "kimi", "zhipu", "ollama", "vllm", "local", "auto"
-]
+] # jlq_fix # 对于ollama，应该设置一个特别的函数
 
 class HelloAgentsLLM:
     """

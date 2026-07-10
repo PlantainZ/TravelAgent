@@ -12,8 +12,8 @@
       <div class="icon-wrapper">
         <span class="icon">✈️</span>
       </div>
-      <h1 class="page-title">正在建设的TravelAgent</h1>
-      <p class="page-subtitle">基于AI的个性化旅行规划,让每一次出行都完美无忧</p>
+      <h1 class="page-title">刚生没几天的TravelAgent</h1>
+      <p class="page-subtitle">不知道什么AI，也不知道什么旅游规划。偷猪3缺1哦</p>
     </div>
 
     <a-card class="form-card" :bordered="false">
@@ -26,10 +26,11 @@
         <div class="form-section">
           <div class="section-header">
             <span class="section-icon">📍</span>
-            <span class="section-title">目的地与日期</span>
+            <span class="section-title">出游时间设置</span>
           </div>
 
           <a-row :gutter="24">
+
             <a-col :span="8">
               <a-form-item name="city" :rules="[{ required: true, message: '请输入目的地城市' }]">
                 <template #label>
@@ -47,6 +48,7 @@
                 </a-input>
               </a-form-item>
             </a-col>
+
             <a-col :span="6">
               <a-form-item name="start_date" :rules="[{ required: true, message: '请选择开始日期' }]">
                 <template #label>
@@ -207,7 +209,7 @@
 import { ref, reactive, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
-import { generateTripPlan } from '@/services/api'
+import { generateTripPlan } from '@/services/api.ts'
 import type { TripFormData } from '@/types'
 import type { Dayjs } from 'dayjs'
 
