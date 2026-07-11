@@ -4,7 +4,7 @@
     <h3>事件修饰符</h3>
     <!-- 【1】阻止默认事件 -->
     <a href="https://bing.com" @click="clickHandle1($event)">百度</a>
-    <a href="https://bing.com" @click.prevent="clickHandle2">百度</a>
+
     <!-- 【2】阻止父级标签的事件 -->
     <div @click="clickDiv">
         <p @click="clickP1">
@@ -19,7 +19,7 @@
         </p>
     </div>
     <div @click="clickDiv">
-        <p @click.stop="clickP1">
+        <p @click.stop="clickP1"> <!--这样的话，就会阻止事件传播，原本会传到div的click事件就不会触发了-->
             测试
             <!--clickP-子事件-->
         </p>
@@ -47,7 +47,7 @@ export default {
             console.log('clickP-子事件');
         },
         clickP2(e){
-            e.stopPropagation();
+            e.stopPropagation(); // 尽量不要在函数里面处理DOM事件，关注逻辑本身。用stop！！！
             console.log('clickP-子事件');
         }
     }

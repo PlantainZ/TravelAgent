@@ -6,6 +6,8 @@ style的绑定
 /*
 style的绑定
 */
+
+
 <template>
     <p :style="p_style">Style绑定</p>
 </template>
