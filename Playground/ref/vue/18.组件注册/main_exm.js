@@ -8,7 +8,7 @@ const app = createApp(App);
 //在这两句的中间写组件注册！
 app.component("Header",Header)
 
-app.mount('#app')； // 挂载
+app.mount('#app'); // 挂载
 
 
 /*
