@@ -5,7 +5,7 @@
       <a-button class="back-button" size="large" @click="goBack">
         ← 返回首页
       </a-button>
-      <a-space size="middle">
+      <a-space size="large">
         <a-button v-if="!editMode" @click="toggleEditMode" type="default">
           ✏️ 编辑行程
         </a-button>
@@ -37,26 +37,57 @@
 
     <div v-if="tripPlan" class="content-wrapper">
       <!-- 侧边导航 -->
-      <div class="side-nav">
-        <a-affix :offset-top="80">
+      <div class="side-nav" >
+        <a-affix :offset-top="80" >
           <a-menu mode="inline" :selected-keys="[activeSection]" @click="scrollToSection">
-            <a-menu-item key="overview">
+          
+
+            <a-sub-menu key="preWork" title="☄️前置准备">
+              <a-menu-item key="ticketRsvt">
+                票务 / 预约
+              </a-menu-item>
+              <a-menu-item key="itemList">
+              <span>准备物品清单</span>
+              </a-menu-item>
+              <a-menu-item key="localInfoSearch">
+                当地信息查询
+              </a-menu-item>
+            </a-sub-menu>
+
+
+            <a-sub-menu key="days" title="📅 我的行程">
+              <a-menu-item key="overview">
               <span>📋 行程概览</span>
             </a-menu-item>
-            <a-menu-item key="budget" v-if="tripPlan.budget">
-              <span>💰 预算明细</span>
-            </a-menu-item>
-            <a-menu-item key="map">
-              <span>📍 景点地图</span>
-            </a-menu-item>
-            <a-sub-menu key="days" title="📅 每日行程">
               <a-menu-item v-for="(day, index) in tripPlan.days" :key="`day-${index}`">
                 第{{ day.day_index + 1 }}天
               </a-menu-item>
             </a-sub-menu>
-            <a-menu-item key="weather" v-if="tripPlan.weather_info && tripPlan.weather_info.length > 0">
-              <span>🌤️ 天气信息</span>
+
+            <a-menu-item key="specialEvent" >
+              <span>📋 特别活动</span>
             </a-menu-item>
+
+            <a-menu-item key="teamQA">
+              <span>🔱组内Q&A</span>
+            </a-menu-item>
+
+            <a-menu-item key="elseCheck">
+              <span>🚨其它调查</span>
+            </a-menu-item>
+
+            <a-menu-item key="budget" v-if="tripPlan.budget">
+              <span>💰 预算明细</span>
+            </a-menu-item>
+
+            <a-menu-item key="map">
+              <span>景点地图</span>
+            </a-menu-item>
+
+            <a-menu-item key="weather" v-if="tripPlan.weather_info && tripPlan.weather_info.length > 0">
+              <span>🌤️ 天气信息</span> <!-- 还要综合到行程概览里去！！！ -->
+            </a-menu-item>
+
           </a-menu>
         </a-affix>
       </div>
@@ -961,6 +992,14 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
   min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   padding: 40px 20px;
+
+  /* jlq_try */
+  /* ✅ 新增/修改以下 4 个属性，完美控制宽度与居中 */
+  width: 100%;           /* 保证在小屏幕上能自适应占满 */
+  max-width: 95%;     /* 核心：设置更大的最大宽度（原来注释的是1200px，你可以随意改大，如 1400, 1600, 1920） */
+  margin: 0 auto;        /* 核心：让盒子在屏幕上水平居中 */
+  box-sizing: border-box;/* 防止 padding 把总宽度撑破 */
+
 }
 
 .page-header {

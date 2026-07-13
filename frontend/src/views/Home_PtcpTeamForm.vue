@@ -1,10 +1,14 @@
 <template>
   <a-list
+    :grid="{ gutter:0, column: 4 }"
+
+    
     class="demo-loadmore-list"
     :loading="initLoading"
     item-layout="horizontal"
     :data-source="list"
   >
+
     <template #loadMore>
       <div
         v-if="!initLoading && !loading"
@@ -15,35 +19,44 @@
       </div>
     </template>
 
-    <template #renderItem="{ item }"> <!-- 一个具名插槽 -->
-      <a-list-item>
-        <template #actions>
-          <a key="list-loadmore-edit">编辑</a>
-          <a key="list-loadmore-more">更多</a>
-        </template>
+      
 
-        <!-- 
-        <a-skeleton> 是骨架屏组件，在数据未加载完成时显示占位动画。
-         avatar：启用头像占位。
-         :title="false"：不显示标题占位。
-         :loading="!!item.loading"：是否显示骨架屏，取决于 item.loading 是否为真值。!! 是双重取反，用于把任意值转为布尔值（true/false）。
-         active：骨架屏显示闪烁动画。
-          -->
-        <a-skeleton avatar :title="false" :loading="!!item.loading" active>
-          <a-list-item-meta
-            :description="item.signature"
-          >
-            <template #title>
-              <a href="https://www.antdv.com/">{{ item.name.last }}</a> <!-- 后续可跳转用户界面 -->>
-            </template>
-            <template #avatar>
-              <!-- <a-avatar :src="item.picture.large" /> -->
-               <a-avatar :size="64" :src="item.profile" />
-            </template>
-          </a-list-item-meta>
-          <div>正在修缮.....</div>
-        </a-skeleton>
+    <template #renderItem="{ item }"> <!-- 一个具名插槽 -->
+
+      <a-list-item>
+        <a-card
+          class="user-card"
+          hoverable
+          :bodyStyle="{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            padding: '16px 8px',
+            height: '100%' 
+          }"
+          :style="{ minHeight: '150px' }"
+        >
+          <a-skeleton avatar :title="false" :loading="!!item.loading" active>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%;">
+
+              <!-- 头像：不可压缩 -->
+              <a-avatar :size="64" :src="item.profile" style="flex-shrink: 0;" />
+
+              <!-- ✅ 修改点2：用户名单行完整显示，超出横向滚动 -->
+              <a
+                href="https://www.antdv.com/"
+                class="user-name"
+                :title="item.name.last" 
+              >
+                {{ item.name.last }}
+              </a>
+
+            </div>
+          </a-skeleton>
+        </a-card>
       </a-list-item>
+
+
     </template>
   </a-list>
 </template>
@@ -54,10 +67,14 @@ import { onMounted, ref, nextTick } from 'vue';
 const count = 4;
 const fakeDataUrl = `https://randomuser.me/api/?results=${count}&inc=name,gender,email,nat,picture&noinfo`;
 
-const fakeUserInfo = [{name:{last:'剑怜情'},signature:'Znn / 施工中....',profile:"/avatar/testProfile/剑怜情.jpg",email:'google.com'},
-                      {name:{last:'玉镜川'},signature:'无敌是多么寂寞',profile:'/avatar/testProfile/玉镜川.jpg',email:'google.com'},
-                      {name:{last:'卷积神经网络'},signature:'金风玉露一相逢',profile:'/avatar/testProfile/CNN.jpg',email:'google.com'},
-                      {name:{last:'渡重绝'},signature:'便胜却人间无数',profile:'/avatar/testProfile/渡重绝.jpg',email:'google.com'}]
+const fakeUserInfo = [{name:{last:'吟游诗人小卷'},signature:'平等地言语攻击所有人',profile:"/avatar/ptcpTeam/吟游诗人小卷.jpg",email:'google.com'},
+                      {name:{last:'残差网络'},signature:'人类的伪捷径',profile:'/avatar/ptcpTeam/残差网络.jpg',email:'google.com'},
+                      {name:{last:'纵时驰'},signature:'踏星行好了没',profile:'/avatar/ptcpTeam/纵时驰.jpg',email:'google.com'},
+                      {name:{last:'龙角散'},signature:'吃起来很清凉',profile:'/avatar/ptcpTeam/龙角散.jpg',email:'google.com'},
+
+                      {name:{last:'六边形稻草人'},signature:'恨明月高悬不独照我',profile:'/avatar/ptcpTeam/六边形稻草人.jpg',email:'google.com'},
+                      {name:{last:'枇杷树下弹琵琶'},signature:'枇杷可不像牛一样不解风情',profile:'/avatar/ptcpTeam/枇杷树下弹琵琶.jpg',email:'google.com'},
+                      {name:{last:'林芝地里挖灵芝'},signature:'骑猪打地洞',profile:'/avatar/ptcpTeam/林芝地里挖灵芝.jpg',email:'google.com'}]
 
 const initLoading = ref(true);
 const loading = ref(false);
@@ -102,7 +119,71 @@ const onLoadMore = () => {
 </script>
 
 <style scoped>
-.demo-loadmore-list {
-  min-height: 350px;
+
+.demo-loadmore-list:deep(.ant-list-item) {
+  min-height: 150px;
+
+  /*
+  * deep()是样式穿透的意思。无视ant的限制。 
+   * padding: 8px 意味着每个格子四周都有 8px 的空白。
+   * 两张卡片相邻时，间距就是 8px + 8px = 16px。
+   * 如果想让间距变成 6px，就把这里改成 padding: 3px !important;
+   * !important是覆盖任何其它样式声明
+   */
+  padding: 8px !important; 
+  
+  /* 清除 Antd 默认的底部 margin，防止上下间距比左右宽 */
+  margin-bottom: 0 !important; 
 }
+
+
+
+/* jlq_add */
+
+.user-card {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.user-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* ✅ 核心：单行完整显示，不换行，不截断 */
+.user-name {
+  font-size: 15px;
+  font-weight: 500;
+  text-align: center;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  
+  /* 强制在一行，不换行 */
+  white-space: nowrap;       
+  flex-shrink: 0;            
+  line-height: 1.4;
+  
+  /* ✅ 关键：不截断（去掉 ellipsis），允许溢出时横向滚动 */
+  overflow-x: auto;
+  overflow-y: hidden;
+  
+  /* 美化滚动条（使其尽可能不占高度、隐形） */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: transparent transparent; /* 默认隐藏，滚动时显示 */
+}
+
+/* Chrome/Safari 滚动条美化 */
+.user-name::-webkit-scrollbar {
+  height: 4px;
+}
+.user-name::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+  border-radius: 2px;
+}
+.user-name:hover::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.4);
+}
+
 </style>

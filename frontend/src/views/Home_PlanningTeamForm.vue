@@ -34,7 +34,7 @@
             :description="item.signature"
           >
             <template #title>
-              <a href="https://www.antdv.com/">{{ item.name.last }}</a> <!-- 后续可跳转用户界面 -->>
+              <a href="https://www.antdv.com/" style="font-size: 18px;">{{ item.name.last }}</a> <!-- 后续可跳转用户界面 -->>
             </template>
             <template #avatar>
               <!-- <a-avatar :src="item.picture.large" /> -->
@@ -54,14 +54,11 @@ import { onMounted, ref, nextTick } from 'vue';
 const count = 4;
 const fakeDataUrl = `https://randomuser.me/api/?results=${count}&inc=name,gender,email,nat,picture&noinfo`;
 
-const fakeUserInfo = [{name:{last:'吟游诗人小卷'},signature:'平等地言语攻击所有人',profile:"/avatar/planningTeam/剑怜情.jpg",email:'google.com'},
-                      {name:{last:'残差网络'},signature:'人类的伪捷径',profile:'/avatar/planningTeam/玉镜川.jpg',email:'google.com'},
-                      {name:{last:'纵时驰'},signature:'踏星行好了没',profile:'/avatar/planningTeam/CNN.jpg',email:'google.com'},
-                      {name:{last:'龙角散'},signature:'吃起来很清凉',profile:'/avatar/planningTeam/渡重绝.jpg',email:'google.com'},
+const fakeUserInfo = [{name:{last:'剑怜情'},signature:'Znn / 施工中....',profile:"/avatar/planningTeam/剑怜情.jpg",email:'google.com'},
+                      {name:{last:'玉镜川'},signature:'无敌是多么寂寞',profile:'/avatar/planningTeam/玉镜川.jpg',email:'google.com'},
+                      {name:{last:'卷积神经网络'},signature:'金风玉露一相逢',profile:'/avatar/planningTeam/CNN.jpg',email:'google.com'},
+                      {name:{last:'渡重绝'},signature:'便胜却人间无数',profile:'/avatar/planningTeam/渡重绝.jpg',email:'google.com'}]
 
-                      {name:{last:'六边形稻草人'},signature:'恨明月高悬不独照我',profile:'/avatar/planningTeam/CNN.jpg',email:'google.com'},
-                      {name:{last:'枇杷树下弹琵琶'},signature:'枇杷可不像牛一样不解风情',profile:'/avatar/planningTeam/CNN.jpg',email:'google.com'},
-                      {name:{last:'林芝地里挖灵芝'},signature:'骑猪打地洞',profile:'/avatar/planningTeam/CNN.jpg',email:'google.com'}]
 
 const initLoading = ref(true);
 const loading = ref(false);

@@ -1,0 +1,4 @@
+{"ts": "2026-07-14T01:54:52.336454", "session_id": "s-20260714-015452-9492", "step": null, "event": "session_start", "payload": {"agent_name": "景点搜索专家", "agent_type": "SimpleAgent"}}
+{"ts": "2026-07-14T01:54:52.336661", "session_id": "s-20260714-015452-9492", "step": null, "event": "message_written", "payload": {"role": "user", "content": "请使用amap_maps_text_search工具搜索的景点相关景点。\n[TOOL_CALL:amap_maps_text_search:keywords=景点,city=]"}}
+{"ts": "2026-07-14T01:54:52.336775", "session_id": "s-20260714-015452-9492", "step": 1, "event": "error", "payload": {"error_type": "LLM_ERROR", "message": "'HelloAgentsLLM' object has no attribute 'invoke_with_tools'"}}
+{"ts": "2026-07-14T01:54:52.336948", "session_id": "s-20260714-015452-9492", "step": null, "event": "session_end", "payload": {"duration": 0.005302, "total_steps": 1, "final_answer": "", "status": "success"}}
