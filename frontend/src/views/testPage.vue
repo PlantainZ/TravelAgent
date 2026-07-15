@@ -155,13 +155,15 @@
             <!-- 行程概览 -->
             <!-- <a-card id="overview" :title="`${tripPlan.city}旅行计划`" :bordered="false" class="overview-card"> -->
             <a-card id="overview" :title="`${tripPlan.city}档案信息`" :bordered="false" class="overview-card">
+              
               <div class="overview-content">
                 <div class="info-item">
                   <span class="info-label">📅 日期:</span>
                   <span class="info-value">{{ tripPlan.start_date }} 至 {{ tripPlan.end_date }}</span>
                 </div>
+                <hr/>
                 <div class="info-item">
-                  <span class="info-label">💡 建议:</span>
+                  <span class="info-label">💡 团队广播:</span>
                   <span class="info-value">{{ tripPlan.overall_suggestions }}</span>
                 </div>
               </div>
@@ -195,11 +197,71 @@
           </div>
 
           <!-- 右侧:地图 -->
-          <div class="right-map">
+          <!-- <div class="right-map">
             <a-card id="map" title="📍 景点地图" :bordered="false" class="map-card">
               <div id="amap-container" style="width: 100%; height: 100%"></div>
             </a-card>
           </div>
+        </div> -->
+        <div class="right-affair">
+            <a-card id="map" title="📍 备忘面板" :bordered="false" class="affair-card">
+
+              <!-- 备忘表格展示 -->
+                <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">Add</a-button>
+  <a-table bordered :data-source="dataSource" :columns="columns">
+    <template #bodyCell="{ column, text, record }">
+      <template v-if="column.dataIndex === 'name'">
+        <div class="editable-cell">
+          <div v-if="editableData[record.key]" class="editable-cell-input-wrapper">
+            <a-input v-model:value="editableData[record.key].name" @pressEnter="save(record.key)" />
+            <check-outlined class="editable-cell-icon-check" @click="save(record.key)" />
+          </div>
+          <div v-else class="editable-cell-text-wrapper">
+            {{ text || ' ' }}
+            <edit-outlined class="editable-cell-icon" @click="edit(record.key)" />
+          </div>
+        </div>
+      </template>
+      <template v-else-if="column.dataIndex === 'operation'">
+        <a-popconfirm
+          v-if="dataSource.length"
+          title="Sure to delete?"
+          @confirm="onDelete(record.key)"
+        >
+          <a>Delete</a>
+        </a-popconfirm>
+      </template>
+    </template>
+  </a-table><!--备忘表格展示结束-->>
+
+
+
+              <!-- Add 气泡框 -->
+              <div id="components-modal-demo-position">
+                  <a-button type="primary" class="edit-btn"
+                            style="position: absolute; bottom: 20px; right: 20px;"
+                            @click="modal2Visible = true">
+                    添加事务
+                  </a-button>
+                  <a-modal
+                    v-model:open="modal2Visible"
+                    title="添加备忘"
+                    centered
+                    @ok="modal2Visible = false"
+                  >
+
+
+                    <p>some contents...</p>
+                    <p>some contents...</p>
+                    <p>some contents...</p>
+
+
+                  </a-modal>
+                </div><!-- 气泡框完成-->
+            </a-card>
+          </div>
+
+
         </div>
 
         <!-- 每日行程:可折叠 -->
@@ -394,14 +456,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick,reactive } from 'vue'
+import { ref, onMounted, nextTick,reactive,computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
+import { CheckOutlined, EditOutlined } from '@ant-design/icons-vue';
+import { cloneDeep } from 'lodash-es';
 import { DownOutlined } from '@ant-design/icons-vue'
 import AMapLoader from '@amap/amap-jsapi-loader'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 
+import type {Ref,UnwrapRef} from 'vue'
 import type { TripPlan } from '@/types'
 
 const router = useRouter()
@@ -425,6 +490,72 @@ const cardBgStyle = reactive({
 // cardBgStyle.backgroundImage = `url(${新图片的URL})`;
 // =================================
 
+// 备忘列表 ========================
+interface DataItem {
+  key: string;
+  name: string;
+  age: number;
+  address: string;
+}
+
+const columns = [
+  {
+    title: 'name',
+    dataIndex: 'name',
+    width: '30%',
+  },
+  {
+    title: 'age',
+    dataIndex: 'age',
+  },
+  {
+    title: 'address',
+    dataIndex: 'address',
+  },
+  {
+    title: 'operation',
+    dataIndex: 'operation',
+  },
+];
+const dataSource: Ref<DataItem[]> = ref([
+  {
+    key: '0',
+    name: 'Edward King 0',
+    age: 32,
+    address: 'London, Park Lane no. 0',
+  },
+  {
+    key: '1',
+    name: 'Edward King 1',
+    age: 32,
+    address: 'London, Park Lane no. 1',
+  },
+]);
+const count = computed(() => dataSource.value.length + 1);
+const editableData: UnwrapRef<Record<string, DataItem>> = reactive({});
+
+const edit = (key: string) => {
+  editableData[key] = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
+};
+const save = (key: string) => {
+  Object.assign(dataSource.value.filter(item => key === item.key)[0], editableData[key]);
+  delete editableData[key];
+};
+
+const onDelete = (key: string) => {
+  dataSource.value = dataSource.value.filter(item => item.key !== key);
+};
+const handleAdd = () => {
+  const newData = {
+    key: `${count.value}`,
+    name: `Edward King ${count.value}`,
+    age: 32,
+    address: `London, Park Lane no. ${count.value}`,
+  };
+  dataSource.value.push(newData);
+};
+// ================================
+
 onMounted(async () => {
   const data = sessionStorage.getItem('tripPlan')
   if (data) {
@@ -436,6 +567,10 @@ onMounted(async () => {
     initMap()
   }
 })
+
+// 私有事务气泡框 ====================
+const modal2Visible = ref<boolean>(false);
+// =================================
 
 
 const goBack = () => {
@@ -1278,7 +1413,7 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
   gap: 20px;
 }
 
-.right-map {
+.right-affair {
   flex: 1;
 }
 
@@ -1300,13 +1435,13 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
 }
 
 .info-label {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 600;
   color: #666;
 }
 
 .info-value {
-  font-size: 15px;
+  font-size: 16px;
   color: #333;
   line-height: 1.6;
 }
@@ -1364,12 +1499,12 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
 }
 
 /* 地图卡片 */
-.map-card {
+.affair-card {
   height: 100%;
   min-height: 500px;
 }
 
-.map-card :deep(.ant-card-body) {
+.affair-card :deep(.ant-card-body) {
   height: calc(100% - 57px);
   padding: 0;
 }
@@ -1685,5 +1820,50 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
 .edit-btn:active {
   box-shadow: 0 2px 6px rgba(26, 58, 108, 0.25);
 }
+
+
+/* jlq_add: 备忘列表 */
+.editable-cell {
+  position: relative;
+  .editable-cell-input-wrapper,
+  .editable-cell-text-wrapper {
+    padding-right: 24px;
+  }
+
+  .editable-cell-text-wrapper {
+    padding: 5px 24px 5px 5px;
+  }
+
+  .editable-cell-icon,
+  .editable-cell-icon-check {
+    position: absolute;
+    right: 0;
+    width: 20px;
+    cursor: pointer;
+  }
+
+  .editable-cell-icon {
+    margin-top: 4px;
+    display: none;
+  }
+
+  .editable-cell-icon-check {
+    line-height: 28px;
+  }
+
+  .editable-cell-icon:hover,
+  .editable-cell-icon-check:hover {
+    color: #108ee9;
+  }
+
+  .editable-add-btn {
+    margin-bottom: 8px;
+  }
+}
+.editable-cell:hover .editable-cell-icon {
+  display: inline-block;
+}
+
+
 </style>
 

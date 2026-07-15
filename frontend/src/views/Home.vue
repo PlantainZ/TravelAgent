@@ -19,109 +19,55 @@
     <a-card class="form-card" :bordered="false">
       <a-form :model="formData" layout="vertical" @finish="handleSubmit">
 
-        <!--jlq_add: 分左右的新增盒子-->
+
+        <!-- 第一行，档案简介独行面板 -->
+        <!-- <div class="form-section">
+          <div class="section-header">
+            <span class="section-icon">🌟</span>
+            <span class="section-title">档案简介</span>
+          </div> -->
+
+          <!-- 标签页，装载计划更新说明 -->
+              <!-- <div class="card-container"> -->
+
+                <!-- <a-tabs v-model:activeKey="activeKey" type="card" size = "large" >
+                  <a-tab-pane key="1" tab="前置活动" >
+                    <p>我观阁下这位阁下那位阁下全都很有姿色，我的我的都是我的全是我的嘿嘿一个也别想跑</p>
+                    <p>Content of Tab Pane 1</p>
+                    <p>Content of Tab Pane 1</p>
+                  </a-tab-pane>
+                  <a-tab-pane key="2" tab="特别活动">
+                    <p>Content of Tab Pane 2</p>
+                    <p>Content of Tab Pane 2</p>
+                    <p>Content of Tab Pane 2</p>
+                  </a-tab-pane>
+                  <a-tab-pane key="3" tab="旅途计划">
+                    <p>Content of Tab Pane 3</p>
+                    <p>Content of Tab Pane 3</p>
+                    <p>Content of Tab Pane 3</p>
+                  </a-tab-pane>
+                </a-tabs> -->
+                <!-- 卡片展示结束 -->
+
+              <!-- </div> -->
+        <!-- </div> -->
+         <!--第一行，档案简介独行面板结束-->
+
+
+
+        <!--jlq_add: 第一行，分左右的新增盒子-->
         <div class="card-container">
 
-          <div class="form-section"><!--左边去！-->
-            <div class="section-header">
-              <span class="section-icon">🍭</span>
-              <span class="section-title">出游时间设置</span>
-            </div>
-
-            <!--            <a-col :span="8">-->
-            <!--              <a-form-item name="city" :rules="[{ required: true, message: '请输入目的地城市' }]">-->
-            <!--                <template #label>-->
-            <!--                  <span class="form-label">目的地城市</span>-->
-            <!--                </template>-->
-            <!--                <a-input-->
-            <!--                  v-model:value="formData.city"-->
-            <!--                  placeholder="例如: 北京"-->
-            <!--                  size="large"-->
-            <!--                  class="custom-input"-->
-            <!--                >-->
-            <!--                  <template #prefix>-->
-            <!--                    <span style="color: #1890ff;">🏙️</span>-->
-            <!--                  </template>-->
-            <!--                </a-input>-->
-            <!--              </a-form-item>-->
-            <!--            </a-col>-->
-
-            <a-row :gutter="24">
-              <a-col :span="6">
-                <a-form-item name="start_date" :rules="[{ required: true, message: '请选择开始日期' }]">
-                  <template #label>
-                    <span class="form-label">开始日期</span>
-                  </template>
-                  <a-date-picker v-model:value="formData.start_date" style="width: 100%" size="large"
-                    class="custom-input" placeholder="选择日期" />
-                </a-form-item>
-              </a-col>
-
-
-
-              <!-- 可选项：具体开始时间 -->
-              <a-col :span="6">
-                <a-form-item name="start_date">
-                  <template #label>
-                    <span class="form-label">具体开始时间</span>
-                  </template>
-                    <a-space direction="vertical">
-                      <a-time-picker v-model:value="value"  style="width: 100%" size="large"/>
-                    </a-space>
-                </a-form-item>
-              </a-col>
-            </a-row>
-            
-
-            <a-row :gutter="24">
-              <a-col :span="6">
-                <a-form-item name="end_date" :rules="[{ required: true, message: '请选择结束日期' }]">
-                  <template #label>
-                    <span class="form-label">结束日期</span>
-                  </template>
-                  <a-date-picker v-model:value="formData.end_date" style="width: 100%" size="large" class="custom-input"
-                    placeholder="选择日期" />
-                </a-form-item>
-              </a-col>
-
-              <!-- 可选项：具体结束时间 -->
-              <a-col :span="6">
-                <a-form-item name="end_date">
-                  <template #label>
-                    <span class="form-label">具体结束时间</span>
-                  </template>
-                    <a-space direction="vertical">
-                      <a-time-picker v-model:value="strValue" value-format="HH:mm:ss" style="width: 100%" size="large" />
-                    </a-space>
-                </a-form-item>
-              </a-col>
-            </a-row>
-
-
-            <a-row :gutter="24">
-              <a-col :span="4">
-                <a-form-item>
-                  <template #label>
-                    <span class="form-label">旅行天数合计</span>
-                  </template>
-                  <div class="days-display-compact">
-                    <span class="days-value">{{ formData.travel_days }}</span>
-                    <span class="days-unit">天</span>
-                  </div>
-                </a-form-item>
-              </a-col>
-            </a-row>
-          </div><!--第一行，左方标记卡结束-->
 
           <!-- jlq_add : 第一行，右方标记卡开始 -->
           <div class="form-section">
             <div class="section-header">
-              <span class="section-icon">📍</span>
-              <span class="section-title">私有事务标记</span>
+              <span class="section-icon">🌟</span>
+              <span class="section-title">档案信息</span>
             </div>
             
             <!-- 各类杂项选择 -->
-                     <a-row :gutter="24">
+                     <!-- <a-row :gutter="24">
                        <a-col :span="8">
                          <a-form-item name="transportation">
                            <template #label>
@@ -164,17 +110,143 @@
                            </div>
                          </a-form-item>
                        </a-col>
-                     </a-row>
+                     </a-row> -->
+              <!-- 各类杂项选择结束 -->
+
+            <!-- 档案名称输入框 -->
+
+            <a-row :gutter="24">
+                            <a-col :span="9">
+
+                <a-form-item >
+                  <template #label>
+                    <span class="form-label">档案名称</span>
+                  </template>
+                  <a-textarea
+                    v-model:value="archiveName"
+                    placeholder="反正以后也能改"
+                    size=""
+                    auto-size
+                  />
+                  </a-form-item></a-col>
+            </a-row>
+             
 
 
             <!-- 大输入框 -->
+            <a-row :gutter="24">
+                <a-col :span="24">
+                  <a-form-item >
+                  <template #label>
+                    <span class="form-label">档案简介</span>
+                  </template>
+                  
             <a-form-item name="free_text_input">
               <a-textarea v-model:value="formData.free_text_input" placeholder="请输入您的额外要求,例如:想去看升旗、需要无障碍设施、对海鲜过敏等..."
                 :rows="3" size="large" class="custom-textarea" />
             </a-form-item>
-          </div>
 
-        </div><!-- jlq_add : 第一行，右方标记卡结束 -->
+
+                  
+                  </a-form-item></a-col>
+            </a-row>
+            
+
+          </div><!-- jlq_add : 第一行，左方标记卡结束 -->
+
+
+          <div class="form-section"><!-- 右边去！-->
+            <div class="section-header">
+              <span class="section-icon">🍭</span>
+              <span class="section-title">出游时间设置</span>
+            </div>
+
+            <!--            <a-col :span="8">-->
+            <!--              <a-form-item name="city" :rules="[{ required: true, message: '请输入目的地城市' }]">-->
+            <!--                <template #label>-->
+            <!--                  <span class="form-label">目的地城市</span>-->
+            <!--                </template>-->
+            <!--                <a-input-->
+            <!--                  v-model:value="formData.city"-->
+            <!--                  placeholder="例如: 北京"-->
+            <!--                  size="large"-->
+            <!--                  class="custom-input"-->
+            <!--                >-->
+            <!--                  <template #prefix>-->
+            <!--                    <span style="color: #1890ff;">🏙️</span>-->
+            <!--                  </template>-->
+            <!--                </a-input>-->
+            <!--              </a-form-item>-->
+            <!--            </a-col>-->
+
+            <a-row :gutter="24">
+              <a-col :span="9">
+                <a-form-item name="start_date" :rules="[{ required: true, message: '请选择开始日期' }]">
+                  <template #label>
+                    <span class="form-label">开始日期</span>
+                  </template>
+                  <a-date-picker v-model:value="formData.start_date" style="width: 100%" size="large"
+                    class="custom-input" placeholder="选择日期" />
+                </a-form-item>
+              </a-col>
+
+
+
+              <!-- 可选项：具体开始时间 -->
+              <a-col :span="9">
+                <a-form-item name="start_date">
+                  <template #label>
+                    <span class="form-label">具体开始时间</span>
+                  </template>
+                    <a-space direction="vertical">
+                      <a-time-picker v-model:value="value"  style="width: 100%" size="large"/>
+                    </a-space>
+                </a-form-item>
+              </a-col>
+            </a-row>
+            
+
+            <a-row :gutter="24">
+              <a-col :span="9">
+                <a-form-item name="end_date" :rules="[{ required: true, message: '请选择结束日期' }]">
+                  <template #label>
+                    <span class="form-label">结束日期</span>
+                  </template>
+                  <a-date-picker v-model:value="formData.end_date" style="width: 100%" size="large" class="custom-input"
+                    placeholder="选择日期" />
+                </a-form-item>
+              </a-col>
+
+              <!-- 可选项：具体结束时间 -->
+              <a-col :span="9">
+                <a-form-item name="end_date">
+                  <template #label>
+                    <span class="form-label">具体结束时间</span>
+                  </template>
+                    <a-space direction="vertical">
+                      <a-time-picker v-model:value="strValue" value-format="HH:mm:ss" style="width: 100%" size="large" />
+                    </a-space>
+                </a-form-item>
+              </a-col>
+            </a-row>
+
+
+            <a-row :gutter="24">
+              <a-col :span="8">
+                <a-form-item>
+                  <template #label>
+                    <span class="form-label">旅行天数合计</span>
+                  </template>
+                  <div class="days-display-compact">
+                    <span class="days-value">{{ formData.travel_days }}</span>
+                    <span class="days-unit">天</span>
+                  </div>
+                </a-form-item>
+              </a-col>
+            </a-row>
+          </div><!--第一行，右边标记卡结束-->
+
+        </div>
 
 
         <!--第二行分板开始-->
@@ -203,46 +275,14 @@
 
         </div><!--第二行分板结束-->
 
-        <!-- 第三行单板，更新说明 -->
-        <div class="form-section">
-          <div class="section-header">
-            <span class="section-icon">🌟</span>
-            <span class="section-title">行程计划更新说明</span>
-          </div>
-
-          <!-- 标签页，装载计划更新说明 -->
-              <div class="card-container">
-                <a-tabs v-model:activeKey="activeKey" type="card" size = "large" >
-                  <a-tab-pane key="1" tab="前置活动" >
-                    <!-- <p>我观阁下这位阁下那位阁下全都很有姿色，我的我的都是我的全是我的嘿嘿一个也别想跑</p>
-                    <p>Content of Tab Pane 1</p>
-                    <p>Content of Tab Pane 1</p> -->
-
-                    <!-- 修改为卡片展示 -->
-                    
-                      <!-- 卡片展示结束 -->
-
-                  </a-tab-pane>
-                  <a-tab-pane key="2" tab="特别活动">
-                    <p>Content of Tab Pane 2</p>
-                    <p>Content of Tab Pane 2</p>
-                    <p>Content of Tab Pane 2</p>
-                  </a-tab-pane>
-                  <a-tab-pane key="3" tab="旅途计划">
-                    <p>Content of Tab Pane 3</p>
-                    <p>Content of Tab Pane 3</p>
-                    <p>Content of Tab Pane 3</p>
-                  </a-tab-pane>
-                </a-tabs>
-              </div>
-        </div><!-- 行程计划更新说明结束 -->
+        <br/><br/>
 
         <!-- 提交按钮 -->
         <a-form-item>
           <a-button type="primary" html-type="submit" :loading="loading" size="large" block class="submit-button">
             <template v-if="!loading">
               <span class="button-icon">🚀</span>
-              <span>查看详细内容</span>
+              <span>创建旅程档案</span>
             </template>
             <template v-else>
               <span>正在拉取中...</span>
@@ -286,6 +326,10 @@ const loading = ref(false)
 const loadingProgress = ref(0)
 const loadingStatus = ref('')
 
+// 档案简介需要的变量 =========
+const archiveName = ref<string>('');
+// ==========================
+
 // 更新说明所需要用的变量=======
 const activeKey = ref('2');
 //============================
@@ -300,16 +344,17 @@ const formData = reactive<TripFormData & { start_date: Dayjs | null; end_date: D
   city: '',
   start_date: null,
   end_date: null,
-  travel_days: 1,
+  travel_days: 0,
   transportation: '公共交通',
   accommodation: '经济型酒店',
   preferences: [],
   free_text_input: ''
-})
+}) // 设置初始默认值
 
 
 // 监听日期变化,自动计算旅行天数
-watch([() => formData.start_date, () => formData.end_date], ([start, end]) => {
+watch([() => formData.start_date, () => formData.end_date],  // 监听组件变量
+      ([start, end]) => { // 监听的这俩变化了，就把新值以这个形式传给回调函数
   if (start && end) {
     const days = end.diff(start, 'day') + 1
     if (days > 0 && days <= 30) {
@@ -378,7 +423,8 @@ const handleSubmit = async () => {
 
       // 短暂延迟后跳转
       setTimeout(() => {
-        router.push('/result')
+        // router.push('/result')
+        router.push('/testPage')
       }, 500)
     } else {
       message.error(response.message || '生成失败')

@@ -8,19 +8,25 @@ import 'ant-design-vue/dist/reset.css' // 2. 把 Ant Design 的样式搬进来
 import App from './App.vue'
 import Home from './views/Home.vue'
 import Result from './views/Result.vue'
+import TestPage from './views/testPage.vue'
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
       path: '/',
-      name: 'backFile',
+      name: 'homePage',
       component: Home
     },
     {
       path: '/result',
       name: 'Result',
       component: Result
+    },
+    {
+      path: '/testPage',
+      name: 'testPage',
+      component: TestPage
     }
   ]
 })

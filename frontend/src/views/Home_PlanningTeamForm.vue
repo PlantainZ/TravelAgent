@@ -41,7 +41,9 @@
                <a-avatar :size="64" :src="item.profile" />
             </template>
           </a-list-item-meta>
-          <div>正在修缮.....</div>
+          <div>   
+             <a-tag  v-for="(tag,index) in item.ptag "  :color="tag.color" :key="index">{{ tag.content }}</a-tag>
+          </div>
         </a-skeleton>
       </a-list-item>
     </template>
@@ -53,11 +55,35 @@
 import { onMounted, ref, nextTick } from 'vue';
 const count = 4;
 const fakeDataUrl = `https://randomuser.me/api/?results=${count}&inc=name,gender,email,nat,picture&noinfo`;
-
-const fakeUserInfo = [{name:{last:'剑怜情'},signature:'Znn / 施工中....',profile:"/avatar/planningTeam/剑怜情.jpg",email:'google.com'},
-                      {name:{last:'玉镜川'},signature:'无敌是多么寂寞',profile:'/avatar/planningTeam/玉镜川.jpg',email:'google.com'},
-                      {name:{last:'卷积神经网络'},signature:'金风玉露一相逢',profile:'/avatar/planningTeam/CNN.jpg',email:'google.com'},
-                      {name:{last:'渡重绝'},signature:'便胜却人间无数',profile:'/avatar/planningTeam/渡重绝.jpg',email:'google.com'}]
+const tagColor = ['blue','red','orange','green','cyan','purple']
+const fakeUserInfo = [{
+                        name:{last:'剑怜情'},
+                        signature:'Znn / 施工中....',
+                        profile:"/avatar/planningTeam/剑怜情.jpg",
+                        email:'google.com',
+                        ptag:[{color:'blue',content:'天下无敌'},{color:'red',content:'一命速通'},{color:'orange',content:'战无不胜'}]
+                      },
+                      {
+                        name:{last:'玉镜川'},
+                        signature:'无敌是多么寂寞',
+                        profile:'/avatar/planningTeam/玉镜川.jpg',
+                        email:'google.com',
+                        ptag:[{color:'purple',content:'备用仓库'},{color:'green',content:'篮子鸡蛋'}]
+                      },
+                      {
+                        name:{last:'卷积神经网络'},
+                        signature:'金风玉露一相逢',
+                        profile:'/avatar/planningTeam/CNN.jpg',
+                        email:'google.com',
+                        ptag:[{color:'blue',content:'急急獭王'},{color:'cyan',content:'浮游天地'},{color:'red',content:'被螃蟹夹'}]
+                      },
+                      {
+                        name:{last:'渡重绝'},
+                        signature:'便胜却人间无数',
+                        profile:'/avatar/planningTeam/渡重绝.jpg',
+                        email:'google.com',
+                        ptag:[{color:'red',content:'短鼻子大象'},{color:'green',content:'996国企'},{color:'orange',content:'武器用同事做的'}]
+                      }]
 
 
 const initLoading = ref(true);

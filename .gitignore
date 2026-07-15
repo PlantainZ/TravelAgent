@@ -2,3 +2,4 @@ backend/.env
 backend/.env.example
 frontend/.env.example
 backend/.env.example
+node_modules
