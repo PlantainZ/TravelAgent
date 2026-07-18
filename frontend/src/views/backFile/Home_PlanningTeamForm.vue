@@ -16,7 +16,7 @@
     </template>
 
     <template #renderItem="{ item }"> <!-- 一个具名插槽 -->
-      <a-list-item :class="{ 'originator-item': item.character === 'originator' }">
+      <a-list-item>
         <template #actions>
           <a key="list-loadmore-edit">编辑</a>
           <a key="list-loadmore-more">更多</a>
@@ -136,14 +136,4 @@ const onLoadMore = () => {
 .demo-loadmore-list {
   min-height: 350px;
 }
-
-/* 给创建人设置的样式 */
-.demo-loadmore-list {
-  min-height: 350px;
-}
-
-:deep(.originator-item) {
-  background-color: #e6f7ff !important;
-}
-
 </style>

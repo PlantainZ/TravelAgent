@@ -155,13 +155,15 @@
             <!-- 行程概览 -->
             <!-- <a-card id="overview" :title="`${tripPlan.city}旅行计划`" :bordered="false" class="overview-card"> -->
             <a-card id="overview" :title="`${tripPlan.city}档案信息`" :bordered="false" class="overview-card">
+              
               <div class="overview-content">
                 <div class="info-item">
                   <span class="info-label">📅 日期:</span>
                   <span class="info-value">{{ tripPlan.start_date }} 至 {{ tripPlan.end_date }}</span>
                 </div>
+                <hr/>
                 <div class="info-item">
-                  <span class="info-label">💡 建议:</span>
+                  <span class="info-label">💡 团队广播:</span>
                   <span class="info-value">{{ tripPlan.overall_suggestions }}</span>
                 </div>
               </div>
@@ -195,12 +197,99 @@
           </div>
 
           <!-- 右侧:地图 -->
-          <div class="right-map">
+          <!-- <div class="right-map">
             <a-card id="map" title="📍 景点地图" :bordered="false" class="map-card">
               <div id="amap-container" style="width: 100%; height: 100%"></div>
             </a-card>
           </div>
+        </div> -->
+        <div class="right-affair">
+            <a-card id="map" title="📍 私有事务标记" :bordered="false" class="affair-card">
+
+              <!-- 备忘表格展示 -->
+                <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">Add</a-button> -->
+                  <a-table bordered :data-source="dataSource" :columns="columns" 
+                            :pagination="false"> <!-- 将分页功能从table里拆出来 -->
+                    <template #bodyCell="{ column, text, record }">
+                      <!-- 具名插槽 的 三个变量
+                        -  column :当前的选中列。以下是它具备的关键属性。
+                                    - dataIndex：必用属性，标识该列对应数据源的字段名（如 'name'）。精准判断当前正在渲染哪一列
+                                    - key：列的唯一标识（通常与 dataIndex 一个作用，是列的id）。
+                        - text: 当前单元格的原始文本值
+                        - record：当前行的完整数据对象
+                      -->
+                      <template v-if="column.dataIndex === 'affair'"> 
+                        <div class="editable-cell"> <!-- ↓ ↓ editableData<Record<string,DataItem>是字典！-->
+                          <div v-if="editableData[record.key]" class="editable-cell-input-wrapper">
+                            <a-input v-model:value="editableData[record.key].affair" @pressEnter="save(record.key)" />
+                            <check-outlined class="editable-cell-icon-check" @click="save(record.key)" /> <!--✅按钮-->
+                          </div>
+                          <div v-else class="editable-cell-text-wrapper">
+                            {{ text || ' ' }}
+                            <edit-outlined class="editable-cell-icon" @click="edit(record.key)" />
+                          </div>
+                        </div>
+                      </template>
+
+                      <template v-else-if="column.dataIndex === 'operation'">
+                        <a-popconfirm
+                          v-if="dataSource.length"
+                          title="确定要删除吗？"
+                          @confirm="onDelete(record.key)"
+                        >
+                          <a>删除</a>
+                        </a-popconfirm>
+                      </template>
+
+                    </template>
+                  </a-table><!--表格展示结束-->
+
+                  <br/>
+
+              <!-- Add 气泡框 -->
+              <div id="pagination_and_addBtn">
+
+                <!-- 右下角的添加事务btn -->
+                  <a-button type="primary" class="edit-btn"
+                            style="position: absolute; bottom: 20px; right: 20px;"
+                            @click="modal2Visible = true">
+                    添加事务
+                  </a-button>
+                  <a-modal
+                    v-model:open="modal2Visible"
+                    title="添加备忘"
+                    centered
+                    @ok="handleAdd"
+                  >
+
+
+                    <p>some contents...</p>
+                    <p>some contents...</p>
+                    <p>some contents...</p>
+
+
+                  </a-modal>
+                </div><!-- 气泡框完成-->
+            </a-card>
+          </div>
         </div>
+
+        <!---->
+        <a-card title="📍 人员信息">
+          <template #extra>
+              <button class="edit-btn" href="#">修改信息</button>
+            </template>
+
+            
+          
+        </a-card>
+
+
+
+
+
+
+
 
         <!-- 每日行程:可折叠 -->
         <a-card title="📅 每日行程" :bordered="false" class="days-card">
@@ -394,15 +483,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick,reactive } from 'vue'
+import { ref, onMounted, nextTick,reactive,computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { message } from 'ant-design-vue'
+import { message, Pagination } from 'ant-design-vue'
+import { CheckOutlined, EditOutlined } from '@ant-design/icons-vue';
+import { cloneDeep } from 'lodash-es';
 import { DownOutlined } from '@ant-design/icons-vue'
 import AMapLoader from '@amap/amap-jsapi-loader'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 
+import type {Ref,UnwrapRef} from 'vue'
 import type { TripPlan } from '@/types'
+import { paginationConfig } from 'ant-design-vue/es/pagination';
 
 const router = useRouter()
 const tripPlan = ref<TripPlan | null>(null)
@@ -425,6 +518,124 @@ const cardBgStyle = reactive({
 // cardBgStyle.backgroundImage = `url(${新图片的URL})`;
 // =================================
 
+
+// 私有事务 =========================================================================================
+// Todo: 数据结构中，key & srNum 功能重叠
+//        想办法干掉一个
+//============================
+interface DataItem {
+  key: string;
+  affair: string;
+  srNum: number;
+  modTime: string;
+}
+
+// 事务Pagination 调整 =========
+
+
+//=================================
+
+const columns = [
+  {
+    title: '序号',
+    dataIndex: 'srNum', // 原来是age
+  },
+  {
+    title: '事务',
+    dataIndex: 'affair', // 原来是name
+    width: '50%',
+  },
+  {
+    title: '修改时间',
+    dataIndex: 'modTime', // 原来是address
+  },
+  {
+    title: '操作',
+    dataIndex: 'operation',
+  },
+];
+const dataSource: Ref<DataItem[]> = ref([
+  {
+    key: '0',
+    affair: '好好锻炼，增肌≈买黄金',
+    srNum: 1,
+    modTime: '祝贺数据结构驯化成功！',
+  },
+  {
+    key: '1',
+    affair: '好好睡觉，不然第二天起床自动-6h',
+    srNum: 26,
+    modTime: '回调函数写了吗',
+  },
+]);
+
+
+const count = computed(() => dataSource.value.length + 1);
+const editableData: UnwrapRef<Record<string, DataItem>> = reactive({});
+/*
+  - UnwrapRef：用于对类型进行解包操作。
+              自动解包嵌套在 reactive 中的 ref 类型，
+              避免 TypeScript 将响应式对象的类型错误推断为 Ref<Record<string, DataItem>> 包装类型
+
+              Vue 3 的 reactive 会对对象进行深度响应式处理，消除所有ref！
+              若对象属性本身是 ref（如 ref({ a: ref(1) })），
+              默认会递归解包 ref，最终得到 { a: number } 而非 { a: Ref<number> }
+
+              但 TypeScript 的类型系统无法自动识别这种解包逻辑，
+              需通过 UnwrapRef 显式声明解包后的类型。
+
+  - Record<string, DataItem>：表示一个键为字符串、值为 DataItem 类型的对象
+  - reactive函数：创建一个空的响应式对象，动态存储当前正在编辑的行数据（以 key 为键）
+                  其所有属性（包括后续动态添加的）均具备响应式能力。
+                  会自动推断返回对象的类型，但需配合 UnwrapRef 修正 TS 的推断偏差
+
+                  - 动态属性响应式：即使后续通过 editableData[key] = ... 动态添加属性，
+                                修改这些属性也会触发视图更新。
+                  - 对象解包规则：若赋值给 reactive 对象的属性本身是 ref，Vue 会自动解包（无需 .value），
+                                  直接使用原始值。
+                  - 为什么不用ref呢：reactive 能自动追踪后续添加的属性（如 editableData[key]），
+                                    而 ref 需通过 .value 访问，代码更冗余。
+*/
+
+const edit = (key: string) => { // ❓这句比较复杂。其实可以考虑用find()，它的返回是个对象。
+                                // const editableData[key] = dataSource.value.find(item => item.key === key);
+  editableData[key] = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
+  // filter：找出item.key和传入的字符串key值相等的那个item...
+  //          但要注意，filter返回的往往是一个数组，所以要取第一个。
+  // 作用：将目标行数据深拷贝到，点击编辑后 渲染出来的editableData框 中，避免直接修改原始数据源。
+  // 为什么用 cloneDeep：防止后续编辑操作意外影响 dataSource（响应式对象直接赋值会共享引用）。
+                     // 保证编辑过程与原始数据解耦，避免未保存时的脏数据残留。
+};
+const save = (key: string) => {
+  Object.assign(dataSource.value.filter(item => key === item.key)[0], editableData[key]);
+  //这是一个赋值语句，将编辑框里的数据editableData[key]，赋值给了dS同item数据。
+  delete editableData[key];
+};
+
+const onDelete = (key: string) => {
+  dataSource.value = dataSource.value.filter(item => item.key !== key);
+  // 是将整个dS字典全刷新了一遍。。。
+};
+
+// 私有事务 列表结束==================
+
+
+// 私有事务Add气泡框 ====================
+const modal2Visible = ref<boolean>(false);
+
+const handleAdd = () => { //ant组件的add
+  const newData = {
+    key: `${count.value}`,
+    affair: `吴钩台加急名单上的那帮人做完了吗 ${count.value}`,
+    srNum: 9,
+    modTime: `喂！ ${count.value}`,
+  };
+  modal2Visible.value = false
+  dataSource.value.push(newData);
+};
+// 私有事务结束==============================================================================
+
+
 onMounted(async () => {
   const data = sessionStorage.getItem('tripPlan')
   if (data) {
@@ -436,6 +647,10 @@ onMounted(async () => {
     initMap()
   }
 })
+
+
+
+
 
 
 const goBack = () => {
@@ -1278,7 +1493,7 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
   gap: 20px;
 }
 
-.right-map {
+.right-affair {
   flex: 1;
 }
 
@@ -1300,13 +1515,13 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
 }
 
 .info-label {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 600;
   color: #666;
 }
 
 .info-value {
-  font-size: 15px;
+  font-size: 16px;
   color: #333;
   line-height: 1.6;
 }
@@ -1363,13 +1578,20 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
   font-weight: 700;
 }
 
-/* 地图卡片 */
-.map-card {
+/* 事务卡片 */
+.affair-card {
   height: 100%;
   min-height: 500px;
+  position:relative;
 }
+ 
+/* 事务pagination  -------------------------- */
+/* 关键：脱离文档流，固定在视口左下角 */
 
-.map-card :deep(.ant-card-body) {
+
+/* 事务pagination 结束 --------------------- */
+
+.affair-card :deep(.ant-card-body) {
   height: calc(100% - 57px);
   padding: 0;
 }
@@ -1685,5 +1907,50 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
 .edit-btn:active {
   box-shadow: 0 2px 6px rgba(26, 58, 108, 0.25);
 }
+
+
+/* jlq_add: 备忘列表 */
+.editable-cell {
+  position: relative;
+  .editable-cell-input-wrapper,
+  .editable-cell-text-wrapper {
+    padding-right: 24px;
+  }
+
+  .editable-cell-text-wrapper {
+    padding: 5px 24px 5px 5px;
+  }
+
+  .editable-cell-icon,
+  .editable-cell-icon-check {
+    position: absolute;
+    right: 0;
+    width: 20px;
+    cursor: pointer;
+  }
+
+  .editable-cell-icon {
+    margin-top: 4px;
+    display: none;
+  }
+
+  .editable-cell-icon-check {
+    line-height: 28px;
+  }
+
+  .editable-cell-icon:hover,
+  .editable-cell-icon-check:hover {
+    color: #108ee9;
+  }
+
+  .editable-add-btn {
+    margin-bottom: 8px;
+  }
+}
+.editable-cell:hover .editable-cell-icon {
+  display: inline-block;
+}
+
+
 </style>
 

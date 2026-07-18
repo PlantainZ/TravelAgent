@@ -33,9 +33,9 @@ const router = createRouter({
 
 const app = createApp(App)
 
-app.use(router)
+app.use(router) // wow终于认识你了
 
-app.use(Antd) // // 3. 全局注册。告诉 Vue：“所有 Ant 组件，以后随便用”
+app.use(Antd) // 3. 全局注册。告诉 Vue：“所有 Ant 组件，以后随便用”
 
 app.mount('#app')
 

@@ -2,7 +2,7 @@
   <div class="result-container">
     <!-- 页面头部 -->
 
-      <h2>此为测试页面！！！！！！！！！！</h2>
+    <h2>此为测试页面！！！！！！！！！！</h2>
     <div class="page-header">
       <a-button class="back-button" size="large" @click="goBack">
         ← 返回首页
@@ -31,7 +31,8 @@
             </a-menu>
           </template>
           <a-button type="default">
-            📥 导出行程 <DownOutlined />
+            📥 导出行程
+            <DownOutlined />
           </a-button>
         </a-dropdown>
       </a-space>
@@ -39,10 +40,10 @@
 
     <div v-if="tripPlan" class="content-wrapper">
       <!-- 侧边导航 -->
-      <div class="side-nav" >
-        <a-affix :offset-top="80" >
+      <div class="side-nav">
+        <a-affix :offset-top="80">
           <a-menu mode="inline" :selected-keys="[activeSection]" @click="scrollToSection">
-          
+
             <a-menu-item key="ItineraryOv">
               <span>📋 档案总览</span>
             </a-menu-item>
@@ -52,7 +53,7 @@
                 票务 / 预约
               </a-menu-item>
               <a-menu-item key="itemList">
-              <span>准备物品清单</span>
+                <span>准备物品清单</span>
               </a-menu-item>
               <a-menu-item key="localInfoSearch">
                 当地信息查询
@@ -62,14 +63,14 @@
 
             <a-sub-menu key="days" title="📅 我的行程">
               <a-menu-item key="planOv">
-              <span>行程概览</span>
+                <span>行程概览</span>
               </a-menu-item>
               <a-menu-item v-for="(day, index) in tripPlan.days" :key="`day-${index}`">
                 第{{ day.day_index + 1 }}天
               </a-menu-item>
             </a-sub-menu>
 
-            <a-menu-item key="specialEvent" >
+            <a-menu-item key="specialEvent">
               <span>📋 特别活动</span>
             </a-menu-item>
 
@@ -106,45 +107,50 @@
 
         <!-- 档案信息大区 -->
         <div class="outer-container">
-    <div class="inner-card" :style="cardBgStyle">
-      <!-- 标题栏 div -->
-      <div class="title-bar">
-        <span class="card-title">将登太行雪满山</span>
-        <span class="card-desc">自古逢秋悲寂寥，我言秋日胜春朝。莫愁前路无知己，天下谁人不识君。</span>
-        <span class="card-desc">仙人抚我顶，结发授长生。</span>
-        
-        <!-- 深灰色横线 -->
-        <div class="divider"></div>
-        
-        <!-- 档案标签 -->
-           <div >
-            <a-tag color="blue" class="infoTag">卷积神经网络</a-tag>
-            <a-tag color="red" class="infoTag" >渡重绝</a-tag>
+          <div class="inner-card" :style="cardBgStyle">
+            <!-- 标题栏 div -->
+            <div class="title-bar">
+              <span class="card-title">将登太行雪满山</span>
 
-            <a-divider type="vertical" style="height: 25px;
+
+              <span class="card-desc">自古逢秋悲寂寥，我言秋日胜春朝。莫愁前路无知己，天下谁人不识君。</span>
+              <span class="card-desc">仙人抚我顶，结发授长生。</span>
+
+              <!-- 深灰色横线 -->
+              <div class="divider"></div>
+
+              <!-- 档案标签 -->
+              <div class="infoTagBar">
+                <a-tag color="blue" class="infoTag">卷积神经网络</a-tag>
+                <a-tag color="red" class="infoTag">渡重绝</a-tag>
+
+                <a-divider type="vertical" style="height: 25px;
                             margin-right: 15px;margin-left: 15px; 
                             background-color: #d9d9d9;" />
 
-            <a-tag color="#f50" class="infoTag" >不接钓鱼佬</a-tag>
-            <a-tag color="#2db7f5" class="infoTag">接心碎小猪</a-tag>
-            <a-tag color="#87d068" class="infoTag">严禁加班</a-tag>
-            <a-tag color="#108ee9" class="infoTag">摸了好大一条</a-tag>
-          </div>
-        <!-- ID 小字 -->
-        <span class="card-id">档案id：123456789</span>
-      </div>
+                <a-tag color="#f50" class="infoTag">不接钓鱼佬</a-tag>
+                <a-tag color="#2db7f5" class="infoTag">接心碎小猪</a-tag>
+                <a-tag color="#87d068" class="infoTag">严禁加班</a-tag>
+                <a-tag color="#108ee9" class="infoTag">摸了好大一条</a-tag>
+              </div>
+              <!-- ID 小字 -->
+              <span class="card-id">档案id：123456789</span>
+            </div>
 
-<!-- 拆分两个独立按钮容器 -->
-    <div class="top-btn-container">
-      <button class="edit-btn top-btn">设置封面</button>
-    </div>
-    
-    <div class="bottom-btn-container">
-      <button class="edit-btn">修改档案信息</button>
-    </div>
+            <!-- 拆分两个独立按钮容器 -->
+            <div class="top-btn-container">
+              <button class="edit-btn top-btn">设置封面</button>
+            </div>
 
-  </div>
-  </div>
+            <div class="bottom-btn-container">
+              <button class="edit-btn">修改档案信息</button>
+            </div>
+
+          </div><!--inner-card结束-->
+
+
+          <!--尝试建立Tag卡片-->
+        </div>
 
 
 
@@ -155,13 +161,13 @@
             <!-- 行程概览 -->
             <!-- <a-card id="overview" :title="`${tripPlan.city}旅行计划`" :bordered="false" class="overview-card"> -->
             <a-card id="overview" :title="`${tripPlan.city}档案信息`" :bordered="false" class="overview-card">
-              
+
               <div class="overview-content">
                 <div class="info-item">
                   <span class="info-label">📅 日期:</span>
                   <span class="info-value">{{ tripPlan.start_date }} 至 {{ tripPlan.end_date }}</span>
                 </div>
-                <hr/>
+                <hr />
                 <div class="info-item">
                   <span class="info-label">💡 团队广播:</span>
                   <span class="info-value">{{ tripPlan.overall_suggestions }}</span>
@@ -203,75 +209,110 @@
             </a-card>
           </div>
         </div> -->
-        <div class="right-affair">
-            <a-card id="map" title="📍 备忘面板" :bordered="false" class="affair-card">
+          <div class="right-affair">
+            <a-card id="map" title="📍 私有事务标记" :bordered="false" class="affair-card">
 
               <!-- 备忘表格展示 -->
-                <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">Add</a-button>
-  <a-table bordered :data-source="dataSource" :columns="columns">
-    <template #bodyCell="{ column, text, record }">
-      <template v-if="column.dataIndex === 'name'">
-        <div class="editable-cell">
-          <div v-if="editableData[record.key]" class="editable-cell-input-wrapper">
-            <a-input v-model:value="editableData[record.key].name" @pressEnter="save(record.key)" />
-            <check-outlined class="editable-cell-icon-check" @click="save(record.key)" />
-          </div>
-          <div v-else class="editable-cell-text-wrapper">
-            {{ text || ' ' }}
-            <edit-outlined class="editable-cell-icon" @click="edit(record.key)" />
-          </div>
-        </div>
-      </template>
-      <template v-else-if="column.dataIndex === 'operation'">
-        <a-popconfirm
-          v-if="dataSource.length"
-          title="Sure to delete?"
-          @confirm="onDelete(record.key)"
-        >
-          <a>Delete</a>
-        </a-popconfirm>
-      </template>
-    </template>
-  </a-table><!--备忘表格展示结束-->>
+              <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">Add</a-button> -->
+              <a-table bordered :data-source="dataSource" :columns="columns" :pagination="false">
+                <!-- 将分页功能从table里拆出来 -->
+                <template #bodyCell="{ column, text, record }">
+                  <!-- 具名插槽 的 三个变量
+                        -  column :当前的选中列。以下是它具备的关键属性。
+                                    - dataIndex：必用属性，标识该列对应数据源的字段名（如 'name'）。精准判断当前正在渲染哪一列
+                                    - key：列的唯一标识（通常与 dataIndex 一个作用，是列的id）。
+                        - text: 当前单元格的原始文本值
+                        - record：当前行的完整数据对象
+                      -->
+                  <template v-if="column.dataIndex === 'affair'">
+                    <div class="editable-cell"> <!-- ↓ ↓ editableData<Record<string,DataItem>是字典！-->
+                      <div v-if="editableData[record.key]" class="editable-cell-input-wrapper">
+                        <a-input v-model:value="editableData[record.key].affair" @pressEnter="save(record.key)" />
+                        <check-outlined class="editable-cell-icon-check" @click="save(record.key)" /> <!--✅按钮-->
+                      </div>
+                      <div v-else class="editable-cell-text-wrapper">
+                        {{ text || ' ' }}
+                        <edit-outlined class="editable-cell-icon" @click="edit(record.key)" />
+                      </div>
+                    </div>
+                  </template>
 
+                  <template v-else-if="column.dataIndex === 'operation'">
+                    <a-popconfirm v-if="dataSource.length" title="确定要删除吗？" @confirm="onDelete(record.key)">
+                      <a>删除</a>
+                    </a-popconfirm>
+                  </template>
 
+                </template>
+              </a-table><!--表格展示结束-->
+
+              <br />
 
               <!-- Add 气泡框 -->
-              <div id="components-modal-demo-position">
-                  <a-button type="primary" class="edit-btn"
-                            style="position: absolute; bottom: 20px; right: 20px;"
-                            @click="modal2Visible = true">
-                    添加事务
-                  </a-button>
-                  <a-modal
-                    v-model:open="modal2Visible"
-                    title="添加备忘"
-                    centered
-                    @ok="modal2Visible = false"
-                  >
+              <div id="pagination_and_addBtn">
+
+                <!-- 右下角的添加事务btn -->
+                <a-button type="primary" class="edit-btn" style="position: absolute; bottom: 20px; right: 20px;"
+                  @click="modal2Visible = true">
+                  添加事务
+                </a-button>
+                <a-modal v-model:open="modal2Visible" title="添加备忘" centered @ok="handleAdd">
 
 
-                    <p>some contents...</p>
-                    <p>some contents...</p>
-                    <p>some contents...</p>
+                  <p>some contents...</p>
+                  <p>some contents...</p>
+                  <p>some contents...</p>
 
 
-                  </a-modal>
-                </div><!-- 气泡框完成-->
+                </a-modal>
+              </div><!-- 气泡框完成-->
             </a-card>
           </div>
+        </div>
 
+        <!-- 人员信息展览 -->
+                   <a-card title="📍 人员信息">
+         <div class="card-container">
+
+            <div class="form-section">
+              <div class="section-header">
+                <span class="section-icon">⚙️</span>
+                <span class="section-title">策划组</span>
+              </div>
+              <!--jlq_add: 策划组列表页面-->
+              <PlanningTeamForm />
+            </div>
+
+            <div class="form-section">
+              <div class="section-header">
+                <span class="section-icon">🎡</span>
+                <span class="section-title">参与组</span>
+              </div>
+              <!--jlq_add: 参与 组列表页面-->
+              <ParticipatingTeamForm />
+            </div>
 
         </div>
+                  </a-card>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         <!-- 每日行程:可折叠 -->
         <a-card title="📅 每日行程" :bordered="false" class="days-card">
           <a-collapse v-model:activeKey="activeDays" accordion>
-            <a-collapse-panel
-              v-for="(day, index) in tripPlan.days"
-              :key="index"
-              :id="`day-${index}`"
-            >
+            <a-collapse-panel v-for="(day, index) in tripPlan.days" :key="index" :id="`day-${index}`">
               <template #header>
                 <div class="day-header">
                   <span class="day-title">第{{ day.day_index + 1 }}天</span>
@@ -297,35 +338,22 @@
 
               <!-- 景点安排 -->
               <a-divider orientation="left">🎯 景点安排</a-divider>
-              <a-list
-                :data-source="day.attractions"
-                :grid="{ gutter: 16, column: 2 }"
-              >
+              <a-list :data-source="day.attractions" :grid="{ gutter: 16, column: 2 }">
                 <template #renderItem="{ item, index }">
                   <a-list-item>
                     <a-card :title="item.name" size="small" class="attraction-card">
                       <!-- 编辑模式下的操作按钮 -->
                       <template #extra v-if="editMode">
                         <a-space>
-                          <a-button
-                            size="small"
-                            @click="moveAttraction(day.day_index, index, 'up')"
-                            :disabled="index === 0"
-                          >
+                          <a-button size="small" @click="moveAttraction(day.day_index, index, 'up')"
+                            :disabled="index === 0">
                             ↑
                           </a-button>
-                          <a-button
-                            size="small"
-                            @click="moveAttraction(day.day_index, index, 'down')"
-                            :disabled="index === day.attractions.length - 1"
-                          >
+                          <a-button size="small" @click="moveAttraction(day.day_index, index, 'down')"
+                            :disabled="index === day.attractions.length - 1">
                             ↓
                           </a-button>
-                          <a-button
-                            size="small"
-                            danger
-                            @click="deleteAttraction(day.day_index, index)"
-                          >
+                          <a-button size="small" danger @click="deleteAttraction(day.day_index, index)">
                             🗑️
                           </a-button>
                         </a-space>
@@ -333,12 +361,8 @@
 
                       <!-- 景点图片 -->
                       <div class="attraction-image-wrapper">
-                        <img
-                          :src="getAttractionImage(item.name, index)"
-                          :alt="item.name"
-                          class="attraction-image"
-                          @error="handleImageError"
-                        />
+                        <img :src="getAttractionImage(item.name, index)" :alt="item.name" class="attraction-image"
+                          @error="handleImageError" />
                         <div class="attraction-badge">
                           <span class="badge-number">{{ index + 1 }}</span>
                         </div>
@@ -353,10 +377,12 @@
                         <a-input v-model:value="item.address" size="small" style="margin-bottom: 8px" />
 
                         <p><strong>游览时长(分钟):</strong></p>
-                        <a-input-number v-model:value="item.visit_duration" :min="10" :max="480" size="small" style="width: 100%; margin-bottom: 8px" />
+                        <a-input-number v-model:value="item.visit_duration" :min="10" :max="480" size="small"
+                          style="width: 100%; margin-bottom: 8px" />
 
                         <p><strong>描述:</strong></p>
-                        <a-textarea v-model:value="item.description" :rows="2" size="small" style="margin-bottom: 8px" />
+                        <a-textarea v-model:value="item.description" :rows="2" size="small"
+                          style="margin-bottom: 8px" />
                       </div>
 
                       <!-- 查看模式 -->
@@ -389,11 +415,7 @@
               <!-- 餐饮安排 -->
               <a-divider orientation="left">🍽️ 餐饮安排</a-divider>
               <a-descriptions :column="1" bordered size="small">
-                <a-descriptions-item
-                  v-for="meal in day.meals"
-                  :key="meal.type"
-                  :label="getMealLabel(meal.type)"
-                >
+                <a-descriptions-item v-for="meal in day.meals" :key="meal.type" :label="getMealLabel(meal.type)">
                   {{ meal.name }}
                   <span v-if="meal.description"> - {{ meal.description }}</span>
                 </a-descriptions-item>
@@ -402,36 +424,34 @@
           </a-collapse>
         </a-card>
 
-        <a-card id="weather" v-if="tripPlan.weather_info && tripPlan.weather_info.length > 0" title="天气信息" style="margin-top: 20px" :bordered="false">
-        <a-list
-          :data-source="tripPlan.weather_info"
-          :grid="{ gutter: 16, column: 3 }"
-        >
-          <template #renderItem="{ item }">
-            <a-list-item>
-              <a-card size="small" class="weather-card">
-                <div class="weather-date">{{ item.date }}</div>
-                <div class="weather-info-row">
-                  <span class="weather-icon">☀️</span>
-                  <div>
-                    <div class="weather-label">白天</div>
-                    <div class="weather-value">{{ item.day_weather }} {{ item.day_temp }}°C</div>
+        <a-card id="weather" v-if="tripPlan.weather_info && tripPlan.weather_info.length > 0" title="天气信息"
+          style="margin-top: 20px" :bordered="false">
+          <a-list :data-source="tripPlan.weather_info" :grid="{ gutter: 16, column: 3 }">
+            <template #renderItem="{ item }">
+              <a-list-item>
+                <a-card size="small" class="weather-card">
+                  <div class="weather-date">{{ item.date }}</div>
+                  <div class="weather-info-row">
+                    <span class="weather-icon">☀️</span>
+                    <div>
+                      <div class="weather-label">白天</div>
+                      <div class="weather-value">{{ item.day_weather }} {{ item.day_temp }}°C</div>
+                    </div>
                   </div>
-                </div>
-                <div class="weather-info-row">
-                  <span class="weather-icon">🌙</span>
-                  <div>
-                    <div class="weather-label">夜间</div>
-                    <div class="weather-value">{{ item.night_weather }} {{ item.night_temp }}°C</div>
+                  <div class="weather-info-row">
+                    <span class="weather-icon">🌙</span>
+                    <div>
+                      <div class="weather-label">夜间</div>
+                      <div class="weather-value">{{ item.night_weather }} {{ item.night_temp }}°C</div>
+                    </div>
                   </div>
-                </div>
-                <div class="weather-wind">
-                  💨 {{ item.wind_direction }} {{ item.wind_power }}
-                </div>
-              </a-card>
-            </a-list-item>
-          </template>
-        </a-list>
+                  <div class="weather-wind">
+                    💨 {{ item.wind_direction }} {{ item.wind_power }}
+                  </div>
+                </a-card>
+              </a-list-item>
+            </template>
+          </a-list>
         </a-card>
       </div>
     </div>
@@ -456,9 +476,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick,reactive,computed } from 'vue'
+import { ref, onMounted, nextTick, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { message } from 'ant-design-vue'
+import { message, Pagination } from 'ant-design-vue'
 import { CheckOutlined, EditOutlined } from '@ant-design/icons-vue';
 import { cloneDeep } from 'lodash-es';
 import { DownOutlined } from '@ant-design/icons-vue'
@@ -466,8 +486,14 @@ import AMapLoader from '@amap/amap-jsapi-loader'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 
-import type {Ref,UnwrapRef} from 'vue'
+import type { Ref, UnwrapRef } from 'vue'
 import type { TripPlan } from '@/types'
+import { paginationConfig } from 'ant-design-vue/es/pagination';
+
+// jlq_add : 人员页面 //
+import PlanningTeamForm from './Home_PlanningTeamForm.vue'
+import ParticipatingTeamForm from './Home_PtcpTeamForm.vue'
+// jlq_add END //
 
 const router = useRouter()
 const tripPlan = ref<TripPlan | null>(null)
@@ -490,71 +516,123 @@ const cardBgStyle = reactive({
 // cardBgStyle.backgroundImage = `url(${新图片的URL})`;
 // =================================
 
-// 备忘列表 ========================
+
+// 私有事务 =========================================================================================
+// Todo: 数据结构中，key & srNum 功能重叠
+//        想办法干掉一个
+//============================
 interface DataItem {
   key: string;
-  name: string;
-  age: number;
-  address: string;
+  affair: string;
+  srNum: number;
+  modTime: string;
 }
+
+// 事务Pagination 调整 =========
+
+
+//=================================
 
 const columns = [
   {
-    title: 'name',
-    dataIndex: 'name',
-    width: '30%',
+    title: '序号',
+    dataIndex: 'srNum', // 原来是age
   },
   {
-    title: 'age',
-    dataIndex: 'age',
+    title: '事务',
+    dataIndex: 'affair', // 原来是name
+    width: '50%',
   },
   {
-    title: 'address',
-    dataIndex: 'address',
+    title: '修改时间',
+    dataIndex: 'modTime', // 原来是address
   },
   {
-    title: 'operation',
+    title: '操作',
     dataIndex: 'operation',
   },
 ];
 const dataSource: Ref<DataItem[]> = ref([
   {
     key: '0',
-    name: 'Edward King 0',
-    age: 32,
-    address: 'London, Park Lane no. 0',
+    affair: '好好锻炼，增肌≈买黄金',
+    srNum: 1,
+    modTime: '祝贺数据结构驯化成功！',
   },
   {
     key: '1',
-    name: 'Edward King 1',
-    age: 32,
-    address: 'London, Park Lane no. 1',
+    affair: '好好睡觉，不然第二天起床自动-6h',
+    srNum: 26,
+    modTime: '回调函数写了吗',
   },
 ]);
+
+
 const count = computed(() => dataSource.value.length + 1);
 const editableData: UnwrapRef<Record<string, DataItem>> = reactive({});
+/*
+  - UnwrapRef：用于对类型进行解包操作。
+              自动解包嵌套在 reactive 中的 ref 类型，
+              避免 TypeScript 将响应式对象的类型错误推断为 Ref<Record<string, DataItem>> 包装类型
 
-const edit = (key: string) => {
+              Vue 3 的 reactive 会对对象进行深度响应式处理，消除所有ref！
+              若对象属性本身是 ref（如 ref({ a: ref(1) })），
+              默认会递归解包 ref，最终得到 { a: number } 而非 { a: Ref<number> }
+
+              但 TypeScript 的类型系统无法自动识别这种解包逻辑，
+              需通过 UnwrapRef 显式声明解包后的类型。
+
+  - Record<string, DataItem>：表示一个键为字符串、值为 DataItem 类型的对象
+  - reactive函数：创建一个空的响应式对象，动态存储当前正在编辑的行数据（以 key 为键）
+                  其所有属性（包括后续动态添加的）均具备响应式能力。
+                  会自动推断返回对象的类型，但需配合 UnwrapRef 修正 TS 的推断偏差
+
+                  - 动态属性响应式：即使后续通过 editableData[key] = ... 动态添加属性，
+                                修改这些属性也会触发视图更新。
+                  - 对象解包规则：若赋值给 reactive 对象的属性本身是 ref，Vue 会自动解包（无需 .value），
+                                  直接使用原始值。
+                  - 为什么不用ref呢：reactive 能自动追踪后续添加的属性（如 editableData[key]），
+                                    而 ref 需通过 .value 访问，代码更冗余。
+*/
+
+const edit = (key: string) => { // ❓这句比较复杂。其实可以考虑用find()，它的返回是个对象。
+  // const editableData[key] = dataSource.value.find(item => item.key === key);
   editableData[key] = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
+  // filter：找出item.key和传入的字符串key值相等的那个item...
+  //          但要注意，filter返回的往往是一个数组，所以要取第一个。
+  // 作用：将目标行数据深拷贝到，点击编辑后 渲染出来的editableData框 中，避免直接修改原始数据源。
+  // 为什么用 cloneDeep：防止后续编辑操作意外影响 dataSource（响应式对象直接赋值会共享引用）。
+  // 保证编辑过程与原始数据解耦，避免未保存时的脏数据残留。
 };
 const save = (key: string) => {
   Object.assign(dataSource.value.filter(item => key === item.key)[0], editableData[key]);
+  //这是一个赋值语句，将编辑框里的数据editableData[key]，赋值给了dS同item数据。
   delete editableData[key];
 };
 
 const onDelete = (key: string) => {
   dataSource.value = dataSource.value.filter(item => item.key !== key);
+  // 是将整个dS字典全刷新了一遍。。。
 };
-const handleAdd = () => {
+
+// 私有事务 列表结束==================
+
+
+// 私有事务Add气泡框 ====================
+const modal2Visible = ref<boolean>(false);
+
+const handleAdd = () => { //ant组件的add
   const newData = {
     key: `${count.value}`,
-    name: `Edward King ${count.value}`,
-    age: 32,
-    address: `London, Park Lane no. ${count.value}`,
+    affair: `吴钩台加急名单上的那帮人做完了吗 ${count.value}`,
+    srNum: 9,
+    modTime: `喂！ ${count.value}`,
   };
+  modal2Visible.value = false
   dataSource.value.push(newData);
 };
-// ================================
+// 私有事务结束==============================================================================
+
 
 onMounted(async () => {
   const data = sessionStorage.getItem('tripPlan')
@@ -568,9 +646,9 @@ onMounted(async () => {
   }
 })
 
-// 私有事务气泡框 ====================
-const modal2Visible = ref<boolean>(false);
-// =================================
+
+
+
 
 
 const goBack = () => {
@@ -1199,10 +1277,14 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
 
   /* jlq_try */
   /* ✅ 新增/修改以下 4 个属性，完美控制宽度与居中 */
-  width: 100%;           /* 保证在小屏幕上能自适应占满 */
-  max-width: 95%;     /* 核心：设置更大的最大宽度（原来注释的是1200px，你可以随意改大，如 1400, 1600, 1920） */
-  margin: 0 auto;        /* 核心：让盒子在屏幕上水平居中 */
-  box-sizing: border-box;/* 防止 padding 把总宽度撑破 */
+  width: 100%;
+  /* 保证在小屏幕上能自适应占满 */
+  max-width: 95%;
+  /* 核心：设置更大的最大宽度（原来注释的是1200px，你可以随意改大，如 1400, 1600, 1920） */
+  margin: 0 auto;
+  /* 核心：让盒子在屏幕上水平居中 */
+  box-sizing: border-box;
+  /* 防止 padding 把总宽度撑破 */
 
 }
 
@@ -1222,7 +1304,7 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
 
 /* 内容布局 */
 .content-wrapper {
-  max-width: 1400px;
+  max-width: 2000px;
   margin: 0 auto;
   display: flex;
   gap: 24px;
@@ -1407,7 +1489,7 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
 }
 
 .left-info {
-  flex: 0 0 400px;
+  flex: 0 0 500px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -1498,11 +1580,18 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
   font-weight: 700;
 }
 
-/* 地图卡片 */
+/* 事务卡片 */
 .affair-card {
   height: 100%;
   min-height: 500px;
+  position: relative;
 }
+
+/* 事务pagination  -------------------------- */
+/* 关键：脱离文档流，固定在视口左下角 */
+
+
+/* 事务pagination 结束 --------------------- */
 
 .affair-card :deep(.ant-card-body) {
   height: calc(100% - 57px);
@@ -1645,6 +1734,7 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1656,6 +1746,7 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1677,9 +1768,9 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
 
 /* jlq_add: 档案Info区域 */
 /* 0.标签样式设置 */
-.infoTag{
+.infoTag {
   padding-bottom: 5px;
-  font-size: 14px; 
+  font-size: 14px;
   padding: 4px 12px;
 }
 
@@ -1697,15 +1788,17 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
 
 /* 2. 内部卡片：灰底、小圆角、相对定位（为按钮绝对定位提供参考） */
 .inner-card {
-  position: relative; /* 关键：作为按钮绝对定位的参考容器 */
-  width: 100%;
+  position: relative;
+  /* 关键：作为按钮绝对定位的参考容器 */
+  height: 550px;
+  width: 75%;
   background-color: #f5f5f5;
   border-radius: 8px;
 }
 
 /* 3. 标题栏 div：上下 50px padding，纵向 flex 布局 */
 .title-bar {
-  padding: 100px 50px 100px 24px; /* 底部增加到 100px，为右下角按钮预留空间 */
+  padding: 180px 50px 100px 30px; /* 底部增加到 170px，为右下角按钮预留空间 */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1714,15 +1807,15 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
 /* 4. 标题文字样式 */
 .card-title {
 
-    /* 分别设置 左上、右上、左下、右下 四个方向的阴影 */
-  text-shadow: 
-     5px  5px 0 rgb(124, 124, 124),
+  /* 分别设置 左上、右上、左下、右下 四个方向的阴影 */
+  text-shadow:
+    5px 5px 0 rgb(124, 124, 124),
     -1px -1px 0 rgb(124, 124, 124),
-     1px -1px 0 rgb(124, 124, 124),
-    -1px  1px 0 rgb(124, 124, 124);
+    1px -1px 0 rgb(124, 124, 124),
+    -1px 1px 0 rgb(124, 124, 124);
 
 
-  font-size: 78px;
+  font-size: 89px;
   font-weight: 600;
   color: #ffffff;
   letter-spacing: 0.5px;
@@ -1731,11 +1824,11 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
 
 /* 5. 简介小字样式 */
 .card-desc {
-  text-shadow: 
-     1px  1px 0 rgb(124, 124, 124),
+  text-shadow:
+    1px 1px 0 rgb(124, 124, 124),
     -1px -1px 0 rgb(124, 124, 124),
-     1px -1px 0 rgb(124, 124, 124),
-    -1px  1px 0 rgb(124, 124, 124);
+    1px -1px 0 rgb(124, 124, 124),
+    -1px 1px 0 rgb(124, 124, 124);
 
   font-size: 18px;
   font-weight: 400;
@@ -1768,22 +1861,25 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
 .top-btn-container {
   position: absolute;
   top: 20px;
-  right: 20px; /* 与底部按钮水平对齐 */
-  z-index: 10; /* 确保不被内容覆盖 */
+  right: 20px;
+  /* 与底部按钮水平对齐 */
+  z-index: 10;
+  /* 确保不被内容覆盖 */
 }
 
 /* 新增：右下角按钮容器 */
 .bottom-btn-container {
   position: absolute;
   bottom: 20px;
-  right: 20px; /* 与顶部按钮水平对齐 */
+  right: 20px;
+  /* 与顶部按钮水平对齐 */
 }
 
 .edit-btn {
   /* position: absolute;
   bottom: 20px;
   right: 20px; */
-  
+
   /* 按钮基础尺寸与排版 */
   padding: 6px 24px;
   font-size: 14px;
@@ -1792,17 +1888,17 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
   line-height: 1.5;
   border-radius: 6px;
   cursor: pointer;
-  
+
   /* 默认状态（失去焦点）：白色背景、深蓝字体、深蓝外框 */
   background-color: #ffffff;
   color: #1a3a6c;
   border: 1.5px solid #1a3a6c;
-  
+
   /* 默认状态预置透明阴影，确保 hover 过渡平滑不跳变 */
   box-shadow: 0 0 0 rgba(26, 58, 108, 0);
-  
+
   /* 只过渡 box-shadow、background-color、color，避免 all 触发意外动画 */
-  transition: 
+  transition:
     box-shadow 0.2s ease,
     background-color 0.2s ease,
     color 0.2s ease;
@@ -1812,8 +1908,10 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
 .edit-btn:hover {
   background-color: #1a3a6c;
   color: #ffffff;
-  border-color: #1a3a6c; /* 外框颜色保持不变 */
-  box-shadow: 4px 8px 20px rgba(26, 58, 108, 0.35); /* 深蓝色调阴影，视觉更统一 */
+  border-color: #1a3a6c;
+  /* 外框颜色保持不变 */
+  box-shadow: 4px 8px 20px rgba(26, 58, 108, 0.35);
+  /* 深蓝色调阴影，视觉更统一 */
 }
 
 /* 按钮按下状态（可选优化）：阴影收缩，模拟按压反馈 */
@@ -1825,6 +1923,7 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
 /* jlq_add: 备忘列表 */
 .editable-cell {
   position: relative;
+
   .editable-cell-input-wrapper,
   .editable-cell-text-wrapper {
     padding-right: 24px;
@@ -1860,10 +1959,63 @@ const drawRoutes = (AMap: any, attractions: any[]) => {
     margin-bottom: 8px;
   }
 }
+
 .editable-cell:hover .editable-cell-icon {
   display: inline-block;
 }
 
 
-</style>
+/* 人员组title ---------------------------------------------------------*/
+/* jlq_add : 两行的左右盒子*/
+.card-container {
+  display: flex;
+  /* 开启弹性盒子，让子元素左右排列 */
+  gap: 24px;
+  /* 两个卡片之间的间距 */
+  max-width: 1920px;
+  /* 限制整个并排区域的最大宽度，你可以自己调 */
+  margin: 0 auto;
+  /* 让这一整块内容在页面里居中 */
+}
 
+.form-section {
+  margin-bottom: 32px;
+  padding: 24px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+  border-radius: 16px;
+  border: 1px solid #e8e8e8;
+  transition: all 0.3s ease;
+
+  /* jlq_add：出游时间设置，将其放置到左边 */
+  flex: 1;
+  /* 核心修改！让它自动占据可用空间 */
+  /* 删掉原来的 max-width: 1400px; */
+  margin: 0;
+  /* 原来有 margin: 0 auto，现在交给外层容器控制居中，所以这里设为0 */
+  position: relative;
+}
+
+.form-section:hover {
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+  transform: translateY(-2px);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #667eea;
+}
+
+.section-icon {
+  font-size: 24px;
+  margin-right: 12px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+</style>

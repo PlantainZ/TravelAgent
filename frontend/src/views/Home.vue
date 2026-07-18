@@ -262,6 +262,7 @@
             <PlanningTeamForm />
           </div>
           
+
           <!-- 第二行，右方分板开始 -->
           <div class="form-section">
             <div class="section-header">
@@ -274,6 +275,7 @@
           </div>
 
         </div><!--第二行分板结束-->
+
 
         <br/><br/>
 
@@ -316,7 +318,7 @@ import type { TripFormData } from '@/types'
 import type { Dayjs } from 'dayjs'
 import dayjs from 'dayjs'
 
-// jlq_add : 新增组件页面 //
+// jlq_add : 人员页面 //
 import PlanningTeamForm from './Home_PlanningTeamForm.vue'
 import ParticipatingTeamForm from './Home_PtcpTeamForm.vue'
 // jlq_add END //
