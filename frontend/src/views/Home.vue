@@ -426,7 +426,7 @@ const handleSubmit = async () => {
       // 短暂延迟后跳转
       setTimeout(() => {
         // router.push('/result')
-        router.push('/testPage')
+        router.push('/testRouter')
       }, 500)
     } else {
       message.error(response.message || '生成失败')

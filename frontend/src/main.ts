@@ -8,7 +8,8 @@ import 'ant-design-vue/dist/reset.css' // 2. 把 Ant Design 的样式搬进来
 import App from './App.vue'
 import Home from './views/Home.vue'
 import Result from './views/Result.vue'
-import TestPage from './views/testPage.vue'
+import TestRouter from './views/testRouter.vue'
+import TestRouterComponent from './views/testRouterComponent.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -18,17 +19,43 @@ const router = createRouter({
       name: 'homePage',
       component: Home
     },
+    // {
+    //   path: '/result',
+    //   name: 'Result',
+    //   component: Result
+    // },
     {
-      path: '/result',
-      name: 'Result',
-      component: Result
+      path: '/testRouter',
+      name: 'testRouter',
+      component: TestRouter,
+      children:[
+        {
+          path:'/Result',
+          name:'Result',
+          component:()=>import('./views/Result.vue')
+        },
+        {
+          path:'/ItineraryOv',
+          name:'ItineraryOv',
+          component:()=>import('./views/ItineraryOv.vue')
+        },
+        {
+          path:'/TicketRsvt',
+          name:'TicketRsvt',
+          component:()=>import('./views/TicketRsvt.vue')
+        },
+      ]
     },
     {
-      path: '/testPage',
-      name: 'testPage',
-      component: TestPage
-    }
-  ]
+      path: '/testRouterComponent',
+      name: 'testRouterComponent',
+      component: TestRouterComponent
+    },
+  ],
+
+  scrollBehavior(){
+    return{ top:0 } // 切换页面时滚动到顶部
+  }
 })
 
 const app = createApp(App)

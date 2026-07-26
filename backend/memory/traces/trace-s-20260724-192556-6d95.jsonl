@@ -1,0 +1,4 @@
+{"ts": "2026-07-24T19:25:56.463721", "session_id": "s-20260724-192556-6d95", "step": null, "event": "session_start", "payload": {"agent_name": "酒店推荐专家", "agent_type": "SimpleAgent"}}
+{"ts": "2026-07-24T19:25:56.463831", "session_id": "s-20260724-192556-6d95", "step": null, "event": "message_written", "payload": {"role": "user", "content": "请搜索的经济型酒店酒店"}}
+{"ts": "2026-07-24T19:25:56.463921", "session_id": "s-20260724-192556-6d95", "step": 1, "event": "error", "payload": {"error_type": "LLM_ERROR", "message": "'HelloAgentsLLM' object has no attribute 'invoke_with_tools'"}}
+{"ts": "2026-07-24T19:25:56.463971", "session_id": "s-20260724-192556-6d95", "step": null, "event": "session_end", "payload": {"duration": 0.000641, "total_steps": 1, "final_answer": "", "status": "success"}}
