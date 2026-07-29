@@ -51,7 +51,7 @@
           <a-menu mode="inline" :selected-keys="[activeSection]" @click="handleMenuClick">
             <!-- scrollToSection本来是点击侧边栏滚动到指定区域-->
 
-            <a-menu-item key="/ItineraryOv">
+            <a-menu-item key="/Result"><!-- 挂载切换 查看前后端链接ItineraryOv -->
               <span>📋 档案总览</span>
             </a-menu-item>
 
@@ -59,11 +59,11 @@
               <a-menu-item key="/TicketRsvt">
                 票务 / 预约
               </a-menu-item>
-              <a-menu-item key="itemList">
+              <a-menu-item key="/ItemList">
                 <span>准备物品清单</span>
               </a-menu-item>
-              <a-menu-item key="localInfoSearch">
-                当地信息查询
+              <a-menu-item key="localInfoSearch" >
+                当地信息查询：暂未开放
               </a-menu-item>
             </a-sub-menu>
 

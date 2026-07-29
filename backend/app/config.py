@@ -71,6 +71,8 @@ def validate_config():
     errors = []
     warnings = []
 
+    print('正在校验.env文件各配置项是否生效....')
+
     if not settings.amap_api_key:
         errors.append("AMAP_API_KEY未配置")
 

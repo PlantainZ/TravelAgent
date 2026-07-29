@@ -343,7 +343,7 @@ const strValue = ref<string>('09:00:00');
 // =================================
 
 const formData = reactive<TripFormData & { start_date: Dayjs | null; end_date: Dayjs | null }>({
-  city: '',
+  city: '广州',
   start_date: null,
   end_date: null,
   travel_days: 0,

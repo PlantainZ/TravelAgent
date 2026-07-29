@@ -1,0 +1,15 @@
+// 此文件管理vite.config.ts 等node端文件
+
+{
+  "compilerOptions": {
+    "composite": true,
+    
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",   // ⚠️ 关键！
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "noEmit": true
+  },
+  "include": ["vite.config.ts"]      // ⚠️ 必须包含 vite.config.ts
+}

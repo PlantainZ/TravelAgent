@@ -44,6 +44,16 @@ const router = createRouter({
           name:'TicketRsvt',
           component:()=>import('./views/TicketRsvt.vue')
         },
+        {
+          path:'/ItemList',
+          name:'ItemList',
+          component:()=>import('./views/ItemList.vue')
+        },
+        {
+          path:'/teamQA',
+          name:'teamQA',
+          component:()=>import('./views/teamQA.vue')
+        },
       ]
     },
     {

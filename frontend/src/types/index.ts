@@ -93,3 +93,52 @@ export interface TripPlanResponse {
   data?: TripPlan
 }
 
+// ItemList.vue 所用数据清单 ===================================
+
+// 枚举
+/** 物品重要性 */
+export enum Importance {
+  Important = 'important',
+  Unimportant = 'unimportant',
+}
+/** 物品任务是否已完成 */
+export enum isDone{
+  Done = 'yes',
+  notDone = 'no',
+}
+
+
+// 接口
+/** 单个物品 */
+export interface Item {
+  /** 新增：物品序号 */
+  key:string
+  /** 物品名称 */
+  name: string
+  /** 重要性 */
+  importance: Importance
+  /** 物品备注 */
+  remark: string
+   /** 是否已经买到，或者拥有？ */
+  itemState?: isDone
+}
+
+/** 物品类别（如：药品、食品、生活用品） */
+export interface Category {
+  /** 类别名称 */
+  name: string
+  /** 类别备注 */
+  remark: string
+  /** 该类别下的所有物品 */
+  items: Item[]
+}
+
+/** 整个所需物品清单 */
+export interface ShoppingList {
+  /** 清单标题 */
+  title: string
+  /** 创建时间（可选） */
+  createdAt?: string
+  /** 所有类别 */
+  categories: Category[]
+}

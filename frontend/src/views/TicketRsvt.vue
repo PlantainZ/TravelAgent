@@ -4,8 +4,15 @@
         <a-tab-pane v-for="pane in panes" :key="pane.key" :tab="pane.title" :closable="pane.closable" >
 
             <div>
-                <!-- 标题栏 div -->
+                <!-- 抢票的标题栏 div -->
                 <div v-if="pane.isGrabbing" class="ticket-header" >
+                    <span class="ticket-title-grabbing">{{ pane.title }}</span>
+                    <span class="ticket-approach"> 公众号预约 </span>
+                    <span class="ticket-time"> 2026.0725 </span>
+                
+                </div>
+                <!-- 预约的标题栏div -->
+                <div v-else class="ticket-header" >
                     <span class="ticket-title-grabbing">{{ pane.title }}</span>
                     <span class="ticket-approach"> 公众号预约 </span>
                     <span class="ticket-time"> 2026.0725 </span>
@@ -37,29 +44,29 @@
 
 
 
-                <!-- 这是内容描述列表 -->
-                <a-descriptions layout="vertical" bordered><!--去除 title="User Info"-->
+                <!-- 这是内容描述列表 layout="vertical"-->
+                <a-descriptions  bordered><!--去除 title="User Info"-->
                     <a-descriptions-item label="预约公众号" :span="3">
                         <div class="qrcode-cell">
                             <span class="qrcode-name">{{pane.title}}</span>
 
-                            <!-- 增加显示二维码的气泡 -->
-                            <a-popover v-model:open="visible" title="Title" trigger="click">
+                            <!-- 增加显示二维码的气泡 v-model:open="visible"-->
+                            <a-popover  title="Title" trigger="click">
                                 <template #content>
                                     <a-qrcode
                                         error-level="H"
                                         value="https://www.antdv.com"
                                         icon="https://www.antdv.com/assets/logo.1ef800a8.svg"
                                     />
-                                    <a @click="hide">Close</a>
+                                    <!-- <a @click="hide">Close</a> -->
                                 </template>
                                 <a-button>点击我扫公众号二维码</a-button>
                             </a-popover>
                         </div>
 
                     </a-descriptions-item>
-                    <a-descriptions-item label="票面选择日期" :span="3">2026.05.03</a-descriptions-item>
-                    <a-descriptions-item label="票面选择时间" :span="3" >17：30</a-descriptions-item>
+                    <a-descriptions-item label="票面选择日期" :span="1">2026.05.03</a-descriptions-item>
+                    <a-descriptions-item label="票面选择时间" :span="2" >17：30</a-descriptions-item>
                     <a-descriptions-item label="票面选择信息" :span="3">一等座</a-descriptions-item>
                     <a-descriptions-item label="抢票开始时间" :span="1">2018-04-24 18:00:00</a-descriptions-item>
                     <a-descriptions-item label="Status" :span="1" >
@@ -67,7 +74,7 @@
                     </a-descriptions-item>
 
                     <a-descriptions-item label="票价">20.00</a-descriptions-item>
-                    <a-descriptions-item label="Official Receipts">$60.00</a-descriptions-item>
+                    <a-descriptions-item label="Official Receipts" :span="3">$60.00</a-descriptions-item>
                     <a-descriptions-item label="注意事项">
                     {{ pane.content }}
                     </a-descriptions-item>
@@ -105,7 +112,7 @@ const panes = ref<{
     isGrabbing: boolean;
     content: string;
     key: string;
-    closable?: boolean
+    closable?: boolean;
 }[]>([
     {
         title: '泉州木偶剧院',
@@ -181,9 +188,7 @@ watch(activeKeyCollapse, val => {
 // 显示二维码的气泡组件
 const visible = ref<boolean>(false);
 
-const hide = () => {
-  visible.value = false;
-};
+
 
 </script>
 

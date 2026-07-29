@@ -5,14 +5,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from ..config import get_settings, validate_config, print_config
 from .routes import trip, poi, map as map_routes
 
-# 获取配置
+# 获取配置 env文件
 settings = get_settings()
 
 # 创建FastAPI应用
 app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
-    description="基于HelloAgents框架的智能旅行规划助手API",
+    description="在2026夏天我做了这个平山海",
     docs_url="/docs",
     redoc_url="/redoc"
 )
@@ -22,8 +22,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.get_cors_origins_list(),
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"], # 允许所有http方法
+    allow_headers=["*"], # 允许所有请求头
 )
 
 # 注册路由
