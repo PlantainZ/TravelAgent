@@ -93,7 +93,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "app.api.main:app",
         host=settings.host,
-        port=settings.port,
+        port=settings.port, # settings.xxxx都在config.py页面
         reload=True
     )
 

@@ -6,10 +6,18 @@
 
 单独提出，应用LangChain框架并改造页面和功能。此为个人试验田。
 
-## 新增内容标记
+## znn：路径标记
 
+v 0.00 ：地基
+- 学习LangChain、LangGraph、vue(vite、ant)、MCP、cursor & Zcode 使用、FastAPI
+
+v 0.01 ：前端示例页面作placeholder
 - Home和主页成分修改
 - 新增票务预约页面。
+- 新增物品显示页面
+
+v 0.02 ：后端修改
+- 尝试Agent框架替换，学习接入
 
 ## ✨ 功能特点
 

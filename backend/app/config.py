@@ -111,4 +111,4 @@ def print_config():
     print(f"LLM Model: {llm_model}")
     print(f"日志级别: {settings.log_level}")
 
-# print_config() # jlq_test
+print_config()

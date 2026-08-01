@@ -8,6 +8,9 @@ from ..core.llm import HelloAgentsLLM
 from ..core.config import Config
 from ..core.message import Message
 
+
+# 思考：simple_agent是否用langchain的封装就已经能完全替代！
+
 if TYPE_CHECKING:
     from tools.registry import ToolRegistry
 
