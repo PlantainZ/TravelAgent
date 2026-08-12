@@ -8,16 +8,22 @@
 
 ## znn：路径标记
 
-v 0.00 ：地基
+v 0.0.0 ：地基
 - 学习LangChain、LangGraph、vue(vite、ant)、MCP、cursor & Zcode 使用、FastAPI
 
-v 0.01 ：前端示例页面作placeholder
+v 0.0.1 ：前端示例页面作placeholder
 - Home和主页成分修改
 - 新增票务预约页面。
 - 新增物品显示页面
 
-v 0.02 ：后端修改
+v 0.0.2 ：后端修改
 - 尝试Agent框架替换，学习接入
+
+v 0.1.0 ：LangGraph替代原生Agent框架成功！
+- 各接口功能测试均已通过。
+- 不再依赖原生HelloAgents！
+- 修缮前端的文件结构。
+- 【产生问题】：生成速度有待改进。
 
 ## ✨ 功能特点
 
