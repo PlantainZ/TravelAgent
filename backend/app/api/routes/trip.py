@@ -1,12 +1,15 @@
 """旅行规划API路由"""
-
+import asyncio
 from fastapi import APIRouter, HTTPException
-from ...models.schemas import (
+from backend.app.models.schemas import (
     TripRequest,
     TripPlanResponse,
     ErrorResponse
-)
-from ...agents.trip_planner_agent import get_trip_planner_agent
+) # 从schemas中引入了一些数据类。。。
+
+# jlq # 文件替换 ...
+# from backend.app.agents.trip_planner_agent_original import get_trip_planner_agent
+from backend.app.agents.trip_planner_agent import generate_plan,get_agent_info
 
 router = APIRouter(prefix="/trip", tags=["旅行规划"])
 
@@ -17,7 +20,7 @@ router = APIRouter(prefix="/trip", tags=["旅行规划"])
     summary="生成旅行计划",
     description="根据用户输入的旅行需求,生成详细的旅行计划"
 )
-async def plan_trip(request: TripRequest):
+def plan_trip(request: TripRequest):
     """
     生成旅行计划
 
@@ -37,11 +40,12 @@ async def plan_trip(request: TripRequest):
 
         # 获取Agent实例
         print("🔄 获取多智能体系统实例...")
-        agent = get_trip_planner_agent()
+        # agent = get_trip_planner_agent()
 
         # 生成旅行计划
         print("🚀 开始生成旅行计划...")
-        trip_plan = agent.plan_trip(request)
+        # trip_plan = agent.plan_trip(request)
+        trip_plan = generate_plan(request)
 
         print("✅ 旅行计划生成成功,准备返回响应\n")
 
@@ -66,21 +70,19 @@ async def plan_trip(request: TripRequest):
     summary="健康检查",
     description="检查旅行规划服务是否正常"
 )
-async def health_check():
+def health_check():                           # ← 同步 def
     """健康检查"""
     try:
-        # 检查Agent是否可用
-        agent = get_trip_planner_agent()
-        
+        info = get_agent_info()                # ← 一行搞定
+
         return {
             "status": "healthy",
             "service": "trip-planner",
-            "agent_name": agent.agent.name,
-            "tools_count": len(agent.agent.list_tools())
+            **info,                            # 展开 agent_name, tools_count 等
         }
+
     except Exception as e:
         raise HTTPException(
             status_code=503,
-            detail=f"服务不可用: {str(e)}"
+            detail=f"服务不可用: {str(e)}",
         )
-

@@ -93,7 +93,7 @@ export interface TripPlanResponse {
   data?: TripPlan
 }
 
-// ItemList.vue 所用数据清单 ===================================
+// B_ItemList.vue 所用数据清单 ===================================
 
 // 枚举
 /** 物品重要性 */

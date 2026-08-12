@@ -1,0 +1,47 @@
+"""LLM服务模块"""
+
+# =========================================
+# jlq_任务：解决掉这个依赖
+# from backend.app.core.llm import HelloAgentsLLM
+from backend.app.agents.trip_planner_agent import MultiAgentTripPlanner
+from backend.app.agents.trip_planner_agent import get_trip_planner_agent
+# =========================================
+from backend.app.config import get_settings
+
+# 全局LLM实例
+_llm_instance = None
+
+
+# def get_llm() -> HelloAgentsLLM:
+def get_llm() -> MultiAgentTripPlanner:
+    """
+    获取LLM实例(单例模式)
+
+    Returns:
+        HelloAgentsLLM实例
+    """
+    global _llm_instance
+
+    if _llm_instance is None:
+        settings = get_settings()
+
+        # HelloAgentsLLM会自动从环境变量读取配置
+        # 包括OPENAI_API_KEY, OPENAI_BASE_URL, OPENAI_MODEL等
+        # _llm_instance = HelloAgentsLLM()
+        _llm_instance = get_trip_planner_agent()
+
+
+        print(f"✅ LLM服务初始化成功")
+        print(f"   提供商: {_llm_instance.provider}")
+        print(f"   模型: {_llm_instance.model}")
+        # print(f"   llm生成内容: {_llm_instance.think()}") # jlq_test # 查看模型的返回内容
+
+    return _llm_instance
+
+
+def reset_llm():
+    """重置LLM实例(用于测试或重新配置)"""
+    global _llm_instance
+    _llm_instance = None
+
+

@@ -1,11 +1,13 @@
 import axios from 'axios'
 import type { TripFormData, TripPlanResponse } from '@/types'
 
+// api基础地址
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
+// 创建axios实例
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 120000, // 2分钟超时
+  timeout: 300000, // 5分钟超时
   headers: {
     'Content-Type': 'application/json'
   }
@@ -41,7 +43,7 @@ apiClient.interceptors.response.use(
 export async function generateTripPlan(formData: TripFormData): Promise<TripPlanResponse> {
   try {
     const response = await apiClient.post<TripPlanResponse>('/api/trip/plan', formData)
-    return response.data
+    return response.data  // axios把json解析后放在.data里    ↑ ↑ ↑ 意思是说，返回的类型为TripPlanResponse。
   } catch (error: any) {
     console.error('生成旅行计划失败:', error)
     throw new Error(error.response?.data?.detail || error.message || '生成旅行计划失败')

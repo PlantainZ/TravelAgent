@@ -8,7 +8,7 @@ from ...models.schemas import (
     RouteResponse,
     WeatherResponse
 )
-from ...services.amap_service import get_amap_service
+from backend.app.services.amap_service import get_amap_service
 
 router = APIRouter(prefix="/map", tags=["地图服务"])
 

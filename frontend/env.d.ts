@@ -9,3 +9,8 @@ declare module '*.scss' {
   const content: { [className: string]: string };
   export default content;
 }
+
+// vite/client.d.ts（Vite 内置），为了识别env文件
+interface ImportMeta {
+  readonly env: ImportMetaEnv  // ✅ 补上了 env
+}

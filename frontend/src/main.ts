@@ -6,8 +6,7 @@ import Antd from 'ant-design-vue' // 1. 把整个 Ant Design 组件库搬进来
 import 'ant-design-vue/dist/reset.css' // 2. 把 Ant Design 的样式搬进来
 
 import App from './App.vue'
-import Home from './views/Home.vue'
-import Result from './views/Result.vue'
+import Home from './views/Home/Home.vue'
 import TestRouter from './views/testRouter.vue'
 import TestRouterComponent from './views/testRouterComponent.vue'
 
@@ -37,22 +36,22 @@ const router = createRouter({
         {
           path:'/ItineraryOv',
           name:'ItineraryOv',
-          component:()=>import('./views/ItineraryOv.vue')
+          component:()=>import('@/views/ItineraryDetail/01_Ov/ItineraryOv.vue')
         },
         {
           path:'/TicketRsvt',
           name:'TicketRsvt',
-          component:()=>import('./views/TicketRsvt.vue')
+          component:()=>import('@/views/ItineraryDetail/02_Preparation/A_TicketReservation/TicketRsvt.vue')
         },
         {
           path:'/ItemList',
           name:'ItemList',
-          component:()=>import('./views/ItemList.vue')
+          component:()=>import('@/views/ItineraryDetail/02_Preparation/B_ItemList/ItemList.vue')
         },
         {
           path:'/teamQA',
           name:'teamQA',
-          component:()=>import('./views/teamQA.vue')
+          component:()=>import('./views/ItineraryDetail/05_TeamQA/teamQA.vue')
         },
       ]
     },

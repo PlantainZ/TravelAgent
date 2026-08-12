@@ -204,12 +204,12 @@
           </div>
 
           <!-- 右侧:地图 -->
-          <!-- <div class="right-map">
-            <a-card id="map" title="📍 景点地图" :bordered="false" class="map-card">
-              <div id="amap-container" style="width: 100%; height: 100%"></div>
-            </a-card>
-          </div>
-        </div> -->
+<!--          <div class="right-map">-->
+<!--            <a-card id="map" title="📍 景点地图" :bordered="false" class="map-card">-->
+<!--              <div id="amap-container" style="width: 100%; height: 100%"></div>-->
+<!--            </a-card>-->
+<!--          </div>-->
+<!--        </div>-->
 
 
 
@@ -481,11 +481,10 @@ import jsPDF from 'jspdf'
 
 import type { Ref, UnwrapRef } from 'vue'
 import type { TripPlan } from '@/types'
-import { paginationConfig } from 'ant-design-vue/es/pagination';
 
 // jlq_add : 人员页面 //
-import PlanningTeamForm from './Home_PlanningTeamForm.vue'
-import ParticipatingTeamForm from './Home_PtcpTeamForm.vue'
+import PlanningTeamForm from './Home/Home_PlanningTeamForm.vue'
+import ParticipatingTeamForm from './Home/Home_PtcpTeamForm.vue'
 // jlq_add END //
 
 

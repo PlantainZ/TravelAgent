@@ -2,16 +2,25 @@
 
 import json
 from typing import Dict, Any, List
-from hello_agents import SimpleAgent
+# jlq_rpc # =====================================
+
+from langchain.agents import create_agent
+from langchain_openai import ChatOpenAI
+from langchain_mcp_adapters.client import MultiServerMCPClient
+from langgraph.checkpoint.memory import InMemorySaver
+import asyncio
 
 # jlq_crt # =====================================
 # from hello_agents.tools import MCPTool
 from tools.builtin.protocol_tools import MCPTool
-# ===============================================
 
-from ..services.llm_service import get_llm
-from ..models.schemas import TripRequest, TripPlan, DayPlan, Attraction, Meal, WeatherInfo, Location, Hotel
-from ..config import get_settings
+from backend.app.models.schemas import TripRequest, TripPlan, DayPlan, Attraction, Meal, WeatherInfo, Location, Hotel
+from backend.app.config import get_settings
+
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # ============ Agent提示词 ============
 
@@ -156,75 +165,78 @@ PLANNER_AGENT_PROMPT = """你是行程规划专家。你的任务是根据景点
    - 预算汇总(budget)包含各项总费用
 """
 
+# ✅✅✅ 关键：在所有函数/类定义之前，显式初始化为 None
+# _trip_planner_agent = None
+# _checkpointer = None
+# _init_lock = asyncio.ock()
+
 
 class MultiAgentTripPlanner:
     """多智能体旅行规划系统"""
 
-    def __init__(self):
+    def __init__(self, llm, checkpointer):
         """初始化多智能体系统"""
         print("🔄 开始初始化多智能体旅行规划系统...")
 
-        try:
-            settings = get_settings()
-            self.llm = get_llm()
+        settings = get_settings()
+        self.llm = llm
+        self.checkpointer = checkpointer
 
-            # 创建共享的MCP工具(只创建一次)
-            print("  - 创建共享MCP工具...")
-            self.amap_tool = MCPTool(
-                name="amap",
-                description="高德地图服务",
-                server_command=["uvx", "amap-mcp-server"],
-                env={"AMAP_MAPS_API_KEY": settings.amap_api_key},
-                auto_expand=True
-            )
+        self.provider = settings.openai_base_url
+        self.model = settings.openai_model
 
-            # 创建景点搜索Agent
-            print("  - 创建景点搜索Agent...")
-            self.attraction_agent = SimpleAgent(
-                name="景点搜索专家",
-                llm=self.llm,
-                system_prompt=ATTRACTION_AGENT_PROMPT
-            )
-            self.attraction_agent.add_tool(self.amap_tool)
+    async def initialize(self):
+        # 创建共享的MCP工具(只创建一次)
+        print("  - 创建共享MCP工具...")
+        self.mcp_client = MultiServerMCPClient(
+            {
+                "amap": {
+                    "url": "https://mcp.amap.com/sse?key=f5345c390cff8a23d5c42a395b765779",
+                    "transport": "sse",
+                },
+            }
+        )
+        tools = await self.mcp_client.get_tools()
 
-            # 创建天气查询Agent
-            print("  - 创建天气查询Agent...")
-            self.weather_agent = SimpleAgent(
-                name="天气查询专家",
-                llm=self.llm,
-                system_prompt=WEATHER_AGENT_PROMPT
-            )
-            self.weather_agent.add_tool(self.amap_tool)
+        # 创建景点搜索Agent
+        print("  - 创建景点搜索Agent...")
+        self.attraction_agent = create_agent(
+            model=self.llm,
+            tools=tools,
+            system_prompt=ATTRACTION_AGENT_PROMPT,
+            checkpointer=self.checkpointer,
+        )
 
-            # 创建酒店推荐Agent
-            print("  - 创建酒店推荐Agent...")
-            self.hotel_agent = SimpleAgent(
-                name="酒店推荐专家",
-                llm=self.llm,
-                system_prompt=HOTEL_AGENT_PROMPT
-            )
-            self.hotel_agent.add_tool(self.amap_tool)
+        print("  - 创建天气搜索Agent...")
+        self.weather_agent = create_agent(
+            model=self.llm,
+            tools=tools,
+            system_prompt=WEATHER_AGENT_PROMPT,
+            checkpointer=self.checkpointer,
+        )
 
-            # 创建行程规划Agent(不需要工具)
-            print("  - 创建行程规划Agent...")
-            self.planner_agent = SimpleAgent(
-                name="行程规划专家",
-                llm=self.llm,
-                system_prompt=PLANNER_AGENT_PROMPT
-            )
+        print("  - 创建酒店搜索Agent...")
+        self.hotel_agent = create_agent(
+            model=self.llm,
+            tools=tools,
+            system_prompt=HOTEL_AGENT_PROMPT,
+            checkpointer=self.checkpointer,
+        )
 
-            print(f"✅ 多智能体系统初始化成功")
-            print(f"   景点搜索Agent: {len(self.attraction_agent.list_tools())} 个工具")
-            print(f"   天气查询Agent: {len(self.weather_agent.list_tools())} 个工具")
-            print(f"   酒店推荐Agent: {len(self.hotel_agent.list_tools())} 个工具")
+        print("  - 创建行程生成Agent...")
+        self.planner_agent = create_agent(
+            model=self.llm,
+            tools=tools,
+            system_prompt=PLANNER_AGENT_PROMPT,
+            checkpointer=self.checkpointer,
+        )
 
-        except Exception as e:
-            print(f"❌ 多智能体系统初始化失败: {str(e)}")
-            import traceback
-            traceback.print_exc()
-            raise
-    
-    def plan_trip(self, request: TripRequest) -> TripPlan:
+        print(f"✅ 多智能体系统初始化成功")
+        print(f"   景点搜索Agent: {len(tools)} 个工具")  # ✅ 直接用 tools
+        for t in tools:
+            print(f"     🔧 {t.name}: {t.description[:50]}")
+
+    async def plan_trip(self, request: TripRequest) -> TripPlan:
         """
         使用多智能体协作生成旅行计划
 
@@ -235,44 +247,60 @@ class MultiAgentTripPlanner:
             旅行计划
         """
         try:
-            print(f"\n{'='*60}")
+            print(f"\n{'=' * 60}")
             print(f"🚀 开始多智能体协作规划旅行...")
             print(f"目的地: {request.city}")
             print(f"日期: {request.start_date} 至 {request.end_date}")
             print(f"天数: {request.travel_days}天")
             print(f"偏好: {', '.join(request.preferences) if request.preferences else '无'}")
-            print(f"{'='*60}\n")
+            print(f"{'=' * 60}\n")
 
             # 步骤1: 景点搜索Agent搜索景点
             print("📍 步骤1: 搜索景点...")
             attraction_query = self._build_attraction_query(request)
-            attraction_response = self.attraction_agent.run(attraction_query)
+            result =await self.attraction_agent.ainvoke(
+                {"messages": [{"role": "user", "content": attraction_query}]},
+                config={"configurable": {"thread_id": f"trip_{request.city}_attractions"}}
+            )
+            attraction_response = result["messages"][-1].content
             print(f"景点搜索结果: {attraction_response[:200]}...\n")
 
             # 步骤2: 天气查询Agent查询天气
             print("🌤️  步骤2: 查询天气...")
             weather_query = f"请查询{request.city}的天气信息"
-            weather_response = self.weather_agent.run(weather_query)
+            result =await self.weather_agent.ainvoke(
+                {"messages": [{"role": "user", "content": weather_query}]},
+                config={"configurable": {"thread_id": f"trip_{request.city}_weather"}}
+            )
+            weather_response = result["messages"][-1].content
             print(f"天气查询结果: {weather_response[:200]}...\n")
 
             # 步骤3: 酒店推荐Agent搜索酒店
             print("🏨 步骤3: 搜索酒店...")
             hotel_query = f"请搜索{request.city}的{request.accommodation}酒店"
-            hotel_response = self.hotel_agent.run(hotel_query)
+            result =await self.hotel_agent.ainvoke(
+                {"messages": [{"role": "user", "content": hotel_query}]},
+                config={"configurable": {"thread_id": f"trip_{request.city}_hotels"}}
+            )
+            hotel_response = result["messages"][-1].content
             print(f"酒店搜索结果: {hotel_response[:200]}...\n")
 
             # 步骤4: 行程规划Agent整合信息生成计划
             print("📋 步骤4: 生成行程计划...")
             planner_query = self._build_planner_query(request, attraction_response, weather_response, hotel_response)
-            planner_response = self.planner_agent.run(planner_query)
+            result =await self.planner_agent.ainvoke(
+                {"messages": [{"role": "user", "content": planner_query}]},
+                config={"configurable": {"thread_id": f"trip_{request.city}_plan"}}
+            )
+            planner_response = result["messages"][-1].content
             print(f"行程规划结果: {planner_response[:300]}...\n")
 
             # 解析最终计划
             trip_plan = self._parse_response(planner_response, request)
 
-            print(f"{'='*60}")
+            print(f"{'=' * 60}")
             print(f"✅ 旅行计划生成完成!")
-            print(f"{'='*60}\n")
+            print(f"{'=' * 60}\n")
 
             return trip_plan
 
@@ -281,7 +309,7 @@ class MultiAgentTripPlanner:
             import traceback
             traceback.print_exc()
             return self._create_fallback_plan(request)
-    
+
     def _build_attraction_query(self, request: TripRequest) -> str:
         """构建景点搜索查询 - 直接包含工具调用"""
         keywords = []
@@ -299,44 +327,44 @@ class MultiAgentTripPlanner:
         """构建行程规划查询"""
         query = f"""请根据以下信息生成{request.city}的{request.travel_days}天旅行计划:
 
-**基本信息:**
-- 城市: {request.city}
-- 日期: {request.start_date} 至 {request.end_date}
-- 天数: {request.travel_days}天
-- 交通方式: {request.transportation}
-- 住宿: {request.accommodation}
-- 偏好: {', '.join(request.preferences) if request.preferences else '无'}
+                    **基本信息:**
+                    - 城市: {request.city}
+                    - 日期: {request.start_date} 至 {request.end_date}
+                    - 天数: {request.travel_days}天
+                    - 交通方式: {request.transportation}
+                    - 住宿: {request.accommodation}
+                    - 偏好: {', '.join(request.preferences) if request.preferences else '无'}
 
-**景点信息:**
-{attractions}
+                    **景点信息:**
+                    {attractions}
 
-**天气信息:**
-{weather}
+                    **天气信息:**
+                    {weather}
 
-**酒店信息:**
-{hotels}
+                    **酒店信息:**
+                    {hotels}
 
-**要求:**
-1. 每天安排2-3个景点
-2. 每天必须包含早中晚三餐
-3. 每天推荐一个具体的酒店(从酒店信息中选择)
-3. 考虑景点之间的距离和交通方式
-4. 返回完整的JSON格式数据
-5. 景点的经纬度坐标要真实准确
-"""
+                    **要求:**
+                    1. 每天安排2-3个景点
+                    2. 每天必须包含早中晚三餐
+                    3. 每天推荐一个具体的酒店(从酒店信息中选择)
+                    3. 考虑景点之间的距离和交通方式
+                    4. 返回完整的JSON格式数据
+                    5. 景点的经纬度坐标要真实准确
+                    """
         if request.free_text_input:
             query += f"\n**额外要求:** {request.free_text_input}"
 
         return query
-    
+
     def _parse_response(self, response: str, request: TripRequest) -> TripPlan:
         """
         解析Agent响应
-        
+
         Args:
             response: Agent响应文本
             request: 原始请求
-            
+
         Returns:
             旅行计划
         """
@@ -358,43 +386,43 @@ class MultiAgentTripPlanner:
                 json_str = response[json_start:json_end]
             else:
                 raise ValueError("响应中未找到JSON数据")
-            
+
             # 解析JSON
             data = json.loads(json_str)
-            
+
             # 转换为TripPlan对象
             trip_plan = TripPlan(**data)
-            
+
             return trip_plan
-            
+
         except Exception as e:
             print(f"⚠️  解析响应失败: {str(e)}")
             print(f"   将使用备用方案生成计划")
             return self._create_fallback_plan(request)
-    
+
     def _create_fallback_plan(self, request: TripRequest) -> TripPlan:
         """创建备用计划(当Agent失败时)"""
         from datetime import datetime, timedelta
-        
+
         # 解析日期
         start_date = datetime.strptime(request.start_date, "%Y-%m-%d")
-        
+
         # 创建每日行程
         days = []
         for i in range(request.travel_days):
             current_date = start_date + timedelta(days=i)
-            
+
             day_plan = DayPlan(
                 date=current_date.strftime("%Y-%m-%d"),
                 day_index=i,
-                description=f"第{i+1}天行程",
+                description=f"第{i + 1}天行程",
                 transportation=request.transportation,
                 accommodation=request.accommodation,
                 attractions=[
                     Attraction(
-                        name=f"{request.city}景点{j+1}",
+                        name=f"{request.city}景点{j + 1}",
                         address=f"{request.city}市",
-                        location=Location(longitude=116.4 + i*0.01 + j*0.005, latitude=39.9 + i*0.01 + j*0.005),
+                        location=Location(longitude=116.4 + i * 0.01 + j * 0.005, latitude=39.9 + i * 0.01 + j * 0.005),
                         visit_duration=120,
                         description=f"这是{request.city}的著名景点",
                         category="景点"
@@ -402,13 +430,13 @@ class MultiAgentTripPlanner:
                     for j in range(2)
                 ],
                 meals=[
-                    Meal(type="breakfast", name=f"第{i+1}天早餐", description="当地特色早餐"),
-                    Meal(type="lunch", name=f"第{i+1}天午餐", description="午餐推荐"),
-                    Meal(type="dinner", name=f"第{i+1}天晚餐", description="晚餐推荐")
+                    Meal(type="breakfast", name=f"第{i + 1}天早餐", description="当地特色早餐"),
+                    Meal(type="lunch", name=f"第{i + 1}天午餐", description="午餐推荐"),
+                    Meal(type="dinner", name=f"第{i + 1}天晚餐", description="晚餐推荐")
                 ]
             )
             days.append(day_plan)
-        
+
         return TripPlan(
             city=request.city,
             start_date=request.start_date,
@@ -419,16 +447,108 @@ class MultiAgentTripPlanner:
         )
 
 
-# 全局多智能体系统实例
-_multi_agent_planner = None
+# ===================================================================
+# 🔧 内部基础设施：同步执行异步代码的唯一通道
+# ===================================================================
+def _run_sync(coro_func, *args, **kwargs):
+    """
+    在同步上下文中安全执行协程。
+    - 线程池 / 主线程脚本：asyncio.run() ✅
+    - 已有 running loop（如 Jupyter）：nest_asyncio 兜底
+    """
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = None
+
+    if loop and loop.is_running():
+        # Jupyter / 某些特殊环境
+        import nest_asyncio
+        nest_asyncio.apply()
+        return loop.run_until_complete(coro_func(*args, **kwargs))
+    else:
+        # FastAPI def 路由（线程池）/ 普通脚本 ← 主要路径
+        return asyncio.run(coro_func(*args, **kwargs))
 
 
-def get_trip_planner_agent() -> MultiAgentTripPlanner:
-    """获取多智能体旅行规划系统实例(单例模式)"""
-    global _multi_agent_planner
+async def _create_planner() -> MultiAgentTripPlanner:
+    """创建一个完整的 planner 实例（含 MCP 连接）"""
+    llm = ChatOpenAI(
+        model=os.getenv("LLM_MODEL_ID"),
+        base_url=os.getenv("LLM_BASE_URL"),
+        api_key=os.getenv("LLM_API_KEY"),
+        temperature=0.7,
+    )
+    checkpointer = InMemorySaver()
+    planner = MultiAgentTripPlanner(llm=llm, checkpointer=checkpointer)
+    await planner.initialize()
+    return planner
 
-    if _multi_agent_planner is None:
-        _multi_agent_planner = MultiAgentTripPlanner()
 
-    return _multi_agent_planner
+# ===================================================================
+# 🎯 对外公开 API（全部同步）
+# ===================================================================
 
+def get_agent_info() -> dict:
+    """
+    获取 Agent 元信息（健康检查专用）
+
+    Returns:
+        {
+            "agent_name": str,
+            "tools_count": int,
+            "model": str,
+            "provider": str,
+        }
+    """
+    async def _inner():
+        planner = await _create_planner()
+        agent = planner.attraction_agent
+        info = {
+            "agent_name": agent.name,
+            "tools_count": len(agent.tools),
+            "model": planner.model,
+            "provider": planner.provider,
+        }
+        return info
+
+    return _run_sync(_inner)
+
+
+def generate_plan(request) -> "TripPlan":
+    """
+    生成旅行计划（行程规划专用）
+
+    Args:
+        request: TripRequest 对象
+
+    Returns:
+        TripPlan 对象
+    """
+    async def _inner():
+        planner = await _create_planner()
+        return await planner.plan_trip(request)
+
+    return _run_sync(_inner)
+
+
+def chat(query: str, thread_id: str = "default") -> str:
+    """
+    与景点搜索 Agent 自由对话（可选扩展）
+
+    Args:
+        query: 用户问题
+        thread_id: 会话ID
+
+    Returns:
+        Agent 回复文本
+    """
+    async def _inner():
+        planner = await _create_planner()
+        result = await planner.attraction_agent.ainvoke(
+            {"messages": [{"role": "user", "content": query}]},
+            config={"configurable": {"thread_id": thread_id}},
+        )
+        return result["messages"][-1].content
+
+    return _run_sync(_inner)

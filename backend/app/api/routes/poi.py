@@ -3,8 +3,8 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from typing import List, Optional
-from ...services.amap_service import get_amap_service
-from ...services.unsplash_service import get_unsplash_service
+from backend.app.services.amap_service import get_amap_service
+from backend.app.services.unsplash_service import get_unsplash_service
 
 router = APIRouter(prefix="/poi", tags=["POI"])
 
