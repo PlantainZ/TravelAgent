@@ -49,9 +49,14 @@ const router = createRouter({
           component:()=>import('@/views/ItineraryDetail/02_Preparation/B_ItemList/ItemList.vue')
         },
         {
-          path:'/teamQA',
-          name:'teamQA',
+          path:'/TeamQA',
+          name:'TeamQA',
           component:()=>import('./views/ItineraryDetail/05_TeamQA/teamQA.vue')
+        },
+        {
+          path:'/TrvlEdit',
+          name:'TrvlEdit',
+          component:()=>import('./views/ItineraryDetail/06_TrvlEdit/trvlEdit.vue')
         },
       ]
     },

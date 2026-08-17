@@ -166,8 +166,9 @@ PLANNER_AGENT_PROMPT = """你是行程规划专家。你的任务是根据景点
 """
 
 # ✅✅✅ 关键：在所有函数/类定义之前，显式初始化为 None
-_trip_planner_agent = None
-_checkpointer = None
+# _trip_planner_agent = None
+# _checkpointer = None
+# _init_lock = asyncio.ock()
 
 
 class MultiAgentTripPlanner:
@@ -206,12 +207,36 @@ class MultiAgentTripPlanner:
             checkpointer=self.checkpointer,
         )
 
+        print("  - 创建天气搜索Agent...")
+        self.weather_agent = create_agent(
+            model=self.llm,
+            tools=tools,
+            system_prompt=WEATHER_AGENT_PROMPT,
+            checkpointer=self.checkpointer,
+        )
+
+        print("  - 创建酒店搜索Agent...")
+        self.hotel_agent = create_agent(
+            model=self.llm,
+            tools=tools,
+            system_prompt=HOTEL_AGENT_PROMPT,
+            checkpointer=self.checkpointer,
+        )
+
+        print("  - 创建行程生成Agent...")
+        self.planner_agent = create_agent(
+            model=self.llm,
+            tools=tools,
+            system_prompt=PLANNER_AGENT_PROMPT,
+            checkpointer=self.checkpointer,
+        )
+
         print(f"✅ 多智能体系统初始化成功")
         print(f"   景点搜索Agent: {len(tools)} 个工具")  # ✅ 直接用 tools
         for t in tools:
             print(f"     🔧 {t.name}: {t.description[:50]}")
 
-    def plan_trip(self, request: TripRequest) -> TripPlan:
+    async def plan_trip(self, request: TripRequest) -> TripPlan:
         """
         使用多智能体协作生成旅行计划
 
@@ -233,25 +258,41 @@ class MultiAgentTripPlanner:
             # 步骤1: 景点搜索Agent搜索景点
             print("📍 步骤1: 搜索景点...")
             attraction_query = self._build_attraction_query(request)
-            attraction_response = self.attraction_agent.run(attraction_query)
+            result =await self.attraction_agent.ainvoke(
+                {"messages": [{"role": "user", "content": attraction_query}]},
+                config={"configurable": {"thread_id": f"trip_{request.city}_attractions"}}
+            )
+            attraction_response = result["messages"][-1].content
             print(f"景点搜索结果: {attraction_response[:200]}...\n")
 
             # 步骤2: 天气查询Agent查询天气
             print("🌤️  步骤2: 查询天气...")
             weather_query = f"请查询{request.city}的天气信息"
-            weather_response = self.weather_agent.run(weather_query)
+            result =await self.weather_agent.ainvoke(
+                {"messages": [{"role": "user", "content": weather_query}]},
+                config={"configurable": {"thread_id": f"trip_{request.city}_weather"}}
+            )
+            weather_response = result["messages"][-1].content
             print(f"天气查询结果: {weather_response[:200]}...\n")
 
             # 步骤3: 酒店推荐Agent搜索酒店
             print("🏨 步骤3: 搜索酒店...")
             hotel_query = f"请搜索{request.city}的{request.accommodation}酒店"
-            hotel_response = self.hotel_agent.run(hotel_query)
+            result =await self.hotel_agent.ainvoke(
+                {"messages": [{"role": "user", "content": hotel_query}]},
+                config={"configurable": {"thread_id": f"trip_{request.city}_hotels"}}
+            )
+            hotel_response = result["messages"][-1].content
             print(f"酒店搜索结果: {hotel_response[:200]}...\n")
 
             # 步骤4: 行程规划Agent整合信息生成计划
             print("📋 步骤4: 生成行程计划...")
             planner_query = self._build_planner_query(request, attraction_response, weather_response, hotel_response)
-            planner_response = self.planner_agent.run(planner_query)
+            result =await self.planner_agent.ainvoke(
+                {"messages": [{"role": "user", "content": planner_query}]},
+                config={"configurable": {"thread_id": f"trip_{request.city}_plan"}}
+            )
+            planner_response = result["messages"][-1].content
             print(f"行程规划结果: {planner_response[:300]}...\n")
 
             # 解析最终计划
@@ -406,84 +447,108 @@ class MultiAgentTripPlanner:
         )
 
 
-# API URL
-# llm_api_url = os.getenv("LLM_BASE_URL")
-# print(llm_api_url)
+# ===================================================================
+# 🔧 内部基础设施：同步执行异步代码的唯一通道
+# ===================================================================
+def _run_sync(coro_func, *args, **kwargs):
+    """
+    在同步上下文中安全执行协程。
+    - 线程池 / 主线程脚本：asyncio.run() ✅
+    - 已有 running loop（如 Jupyter）：nest_asyncio 兜底
+    """
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = None
+
+    if loop and loop.is_running():
+        # Jupyter / 某些特殊环境
+        import nest_asyncio
+        nest_asyncio.apply()
+        return loop.run_until_complete(coro_func(*args, **kwargs))
+    else:
+        # FastAPI def 路由（线程池）/ 普通脚本 ← 主要路径
+        return asyncio.run(coro_func(*args, **kwargs))
 
 
-# 安全初始化
-def _init_agent_sync():
-    """内部同步包装器：负责初始化Agent"""
-    global _trip_planner_agent, _checkpointer
-
-    if _trip_planner_agent is not None:
-        return _trip_planner_agent  # 已初始化则跳过
-
-    async def _async_init():
-        global _trip_planner_agent, _checkpointer  # ✅ 用 nonlocal 或 global 都行，但要确保赋值生效
-
-        llm = ChatOpenAI(
-            model=os.getenv("LLM_MODEL_ID"),
-            base_url=os.getenv("LLM_BASE_URL"),
-            api_key=os.getenv("LLM_API_KEY"),
-            temperature=0.7,
-        )
-        checkpointer = InMemorySaver()
-
-        planner = MultiAgentTripPlanner(llm=llm, checkpointer=checkpointer)
-        await planner.initialize()
-
-        _trip_planner_agent = planner.attraction_agent
-        _checkpointer = checkpointer
-
-    # # ✅ 核心：在同步函数中安全运行异步初始化
-    # try:
-    #     loop = asyncio.get_running_loop()
-    # except RuntimeError:
-    #     loop = None
-
-    # if loop and loop.is_running():
-    #     # ⚠️ 如果已经在异步环境中（如Jupyter/FastAPI），不能直接用asyncio.run()
-    #     # 需要 nest_asyncio 或者改用 async 接口
-    #     import nest_asyncio
-    #     nest_asyncio.apply()
-    #     loop.run_until_complete(_async_init())
-    # else:
-    #     # 普通同步环境，直接 asyncio.run()
-    asyncio.run(_async_init())  # 不是ipynb，无需以上复杂操作
-
-    return _trip_planner_agent  # 返回一个agent
+async def _create_planner() -> MultiAgentTripPlanner:
+    """创建一个完整的 planner 实例（含 MCP 连接）"""
+    llm = ChatOpenAI(
+        model=os.getenv("LLM_MODEL_ID"),
+        base_url=os.getenv("LLM_BASE_URL"),
+        api_key=os.getenv("LLM_API_KEY"),
+        temperature=0.7,
+    )
+    checkpointer = InMemorySaver()
+    planner = MultiAgentTripPlanner(llm=llm, checkpointer=checkpointer)
+    await planner.initialize()
+    return planner
 
 
 # ===================================================================
-# 以下是通用接口
+# 🎯 对外公开 API（全部同步）
 # ===================================================================
 
-def get_trip_planner_agent():
+def get_agent_info() -> dict:
     """
-    同步获取景点搜索Agent
-    在其他 .py 文件中直接调用: agent = get_trip_planner_agent()
+    获取 Agent 元信息（健康检查专用）
+
+    Returns:
+        {
+            "agent_name": str,
+            "tools_count": int,
+            "model": str,
+            "provider": str,
+        }
     """
-    return _init_agent_sync()
+    async def _inner():
+        planner = await _create_planner()
+        agent = planner.attraction_agent
+        info = {
+            "agent_name": agent.name,
+            "tools_count": len(agent.tools),
+            "model": planner.model,
+            "provider": planner.provider,
+        }
+        return info
+
+    return _run_sync(_inner)
 
 
-def invoke_trip_planner(query: str, thread_id: str = "1") -> str:
+def generate_plan(request) -> "TripPlan":
     """
-    同步调用Agent的便捷封装
-    在其他 .py 文件中直接调用: result = invoke_trip_planner("推荐北京的景点")
-    """
-    _init_agent_sync()  # 确保已初始化（有缓存，不会重复创建）
+    生成旅行计划（行程规划专用）
 
-    async def _async_invoke():
-        result = await _trip_planner_agent.ainvoke(
+    Args:
+        request: TripRequest 对象
+
+    Returns:
+        TripPlan 对象
+    """
+    async def _inner():
+        planner = await _create_planner()
+        return await planner.plan_trip(request)
+
+    return _run_sync(_inner)
+
+
+def chat(query: str, thread_id: str = "default") -> str:
+    """
+    与景点搜索 Agent 自由对话（可选扩展）
+
+    Args:
+        query: 用户问题
+        thread_id: 会话ID
+
+    Returns:
+        Agent 回复文本
+    """
+    async def _inner():
+        planner = await _create_planner()
+        result = await planner.attraction_agent.ainvoke(
             {"messages": [{"role": "user", "content": query}]},
             config={"configurable": {"thread_id": thread_id}},
         )
         return result["messages"][-1].content
 
-    # ✅ .py 文件直接 asyncio.run()
-    return asyncio.run(_async_invoke())
-
-# 测试本文件
-# tripPlannerAgent = get_trip_planner_agent()  # ✅ 用封装好的函数，带缓存+返回值
-# print(tripPlannerAgent)
+    return _run_sync(_inner)

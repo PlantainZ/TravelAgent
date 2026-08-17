@@ -69,7 +69,7 @@
 
 
             <a-sub-menu key="days" title="📅 我的行程">
-              <a-menu-item key="/trvlEdit"> <!-- 测试testRouter噢 -->
+              <a-menu-item key="/TrvlEdit"> <!-- 测试testRouter噢 -->
                 <span>行程编辑</span>
               </a-menu-item>
               <a-menu-item v-for="(day, index) in tripPlan.days" :key="`day-${index}`">
@@ -81,7 +81,7 @@
               <span>📋 特别活动</span>
             </a-menu-item>
 
-            <a-menu-item key="teamQA">
+            <a-menu-item key="TeamQA">
               <span>🔱组内Q&A</span>
             </a-menu-item>
 

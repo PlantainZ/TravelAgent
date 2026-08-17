@@ -236,6 +236,9 @@ class MultiAgentTripPlanner:
         for t in tools:
             print(f"     🔧 {t.name}: {t.description[:50]}")
 
+
+
+    # 修改为并行Agent结构...
     async def plan_trip(self, request: TripRequest) -> TripPlan:
         """
         使用多智能体协作生成旅行计划
@@ -249,59 +252,66 @@ class MultiAgentTripPlanner:
         try:
             print(f"\n{'=' * 60}")
             print(f"🚀 开始多智能体协作规划旅行...")
-            print(f"目的地: {request.city}")
-            print(f"日期: {request.start_date} 至 {request.end_date}")
-            print(f"天数: {request.travel_days}天")
-            print(f"偏好: {', '.join(request.preferences) if request.preferences else '无'}")
+            print(f"目的地: {request.city} | 天数: {request.travel_days}天")
             print(f"{'=' * 60}\n")
 
-            # 步骤1: 景点搜索Agent搜索景点
-            print("📍 步骤1: 搜索景点...")
+            # ==========================================
+            # 🔥 核心优化：前3个Agent并行执行
+            # ==========================================
+            print("⚡ 并行执行: 景点搜索 / 天气查询 / 酒店推荐...")
+
             attraction_query = self._build_attraction_query(request)
-            result =await self.attraction_agent.ainvoke(
+            weather_query = f"请查询{request.city}的天气信息"
+            hotel_query = f"请搜索{request.city}的{request.accommodation}酒店"
+
+            # 定义三个异步任务
+            attraction_task = self.attraction_agent.ainvoke(
                 {"messages": [{"role": "user", "content": attraction_query}]},
                 config={"configurable": {"thread_id": f"trip_{request.city}_attractions"}}
             )
-            attraction_response = result["messages"][-1].content
-            print(f"景点搜索结果: {attraction_response[:200]}...\n")
-
-            # 步骤2: 天气查询Agent查询天气
-            print("🌤️  步骤2: 查询天气...")
-            weather_query = f"请查询{request.city}的天气信息"
-            result =await self.weather_agent.ainvoke(
+            weather_task = self.weather_agent.ainvoke(
                 {"messages": [{"role": "user", "content": weather_query}]},
                 config={"configurable": {"thread_id": f"trip_{request.city}_weather"}}
             )
-            weather_response = result["messages"][-1].content
-            print(f"天气查询结果: {weather_response[:200]}...\n")
-
-            # 步骤3: 酒店推荐Agent搜索酒店
-            print("🏨 步骤3: 搜索酒店...")
-            hotel_query = f"请搜索{request.city}的{request.accommodation}酒店"
-            result =await self.hotel_agent.ainvoke(
+            hotel_task = self.hotel_agent.ainvoke(
                 {"messages": [{"role": "user", "content": hotel_query}]},
                 config={"configurable": {"thread_id": f"trip_{request.city}_hotels"}}
             )
-            hotel_response = result["messages"][-1].content
-            print(f"酒店搜索结果: {hotel_response[:200]}...\n")
 
-            # 步骤4: 行程规划Agent整合信息生成计划
-            print("📋 步骤4: 生成行程计划...")
-            planner_query = self._build_planner_query(request, attraction_response, weather_response, hotel_response)
-            result =await self.planner_agent.ainvoke(
+            # 并发等待所有任务完成
+            results = await asyncio.gather(
+                attraction_task, weather_task, hotel_task,
+                return_exceptions=True  # ⚠️ 防止单个失败导致全部崩溃
+            )
+
+            # 安全提取结果
+            attraction_response = self._safe_extract(results[0], "景点搜索")
+            weather_response = self._safe_extract(results[1], "天气查询")
+            hotel_response = self._safe_extract(results[2], "酒店推荐")
+
+            print(f"✅ 并行任务完成!")
+            print(f"  📍 景点: {attraction_response[:100]}...")
+            print(f"  🌤️  天气: {weather_response[:100]}...")
+            print(f"  🏨 酒店: {hotel_response[:100]}...\n")
+
+            # ==========================================
+            # 步骤4: 串行执行（必须等待前面结果）
+            # ==========================================
+            print("📋 步骤4: 整合信息生成行程计划...")
+            planner_query = self._build_planner_query(
+                request, attraction_response, weather_response, hotel_response
+            )
+            result = await self.planner_agent.ainvoke(
                 {"messages": [{"role": "user", "content": planner_query}]},
                 config={"configurable": {"thread_id": f"trip_{request.city}_plan"}}
             )
             planner_response = result["messages"][-1].content
-            print(f"行程规划结果: {planner_response[:300]}...\n")
 
-            # 解析最终计划
             trip_plan = self._parse_response(planner_response, request)
 
             print(f"{'=' * 60}")
             print(f"✅ 旅行计划生成完成!")
             print(f"{'=' * 60}\n")
-
             return trip_plan
 
         except Exception as e:
@@ -309,6 +319,21 @@ class MultiAgentTripPlanner:
             import traceback
             traceback.print_exc()
             return self._create_fallback_plan(request)
+
+    def _safe_extract(self, result, task_name: str) -> str:
+        """安全地从gather结果中提取内容，处理异常"""
+        if isinstance(result, Exception):
+            print(f"⚠️ {task_name}失败: {result}")
+            return f"{task_name}暂时无法获取信息"
+        try:
+            return result["messages"][-1].content
+        except (KeyError, IndexError, TypeError) as e:
+            print(f"⚠️ {task_name}结果解析失败: {e}")
+            return f"{task_name}结果格式异常"
+
+
+
+
 
     def _build_attraction_query(self, request: TripRequest) -> str:
         """构建景点搜索查询 - 直接包含工具调用"""
