@@ -1,18 +1,12 @@
 """多智能体旅行规划系统"""
 
 import json
-from typing import Dict, Any, List
-# jlq_rpc # =====================================
 
 from langchain.agents import create_agent
 from langchain_openai import ChatOpenAI
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langgraph.checkpoint.memory import InMemorySaver
 import asyncio
-
-# jlq_crt # =====================================
-# from hello_agents.tools import MCPTool
-from tools.builtin.protocol_tools import MCPTool
 
 from backend.app.models.schemas import TripRequest, TripPlan, DayPlan, Attraction, Meal, WeatherInfo, Location, Hotel
 from backend.app.config import get_settings

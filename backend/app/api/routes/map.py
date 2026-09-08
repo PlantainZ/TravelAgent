@@ -1,7 +1,7 @@
 """地图服务API路由"""
 from fastapi import APIRouter, HTTPException, Query
 from typing import Optional
-from ...models.schemas import (
+from backend.app.models.schemas import (
     POISearchRequest,
     POISearchResponse,
     RouteRequest,
@@ -40,8 +40,15 @@ async def search_poi(
         service = get_amap_service()
         
         # 搜索POI
-        pois = service.search_poi(keywords, city, citylimit)
-        
+        pois = await service.text_search(keywords, city, citylimit)
+
+        # 查看返回数据的格式
+        print(f"🔍 text_search 原始返回: {pois}")  # ← 加这一行
+        print(f"🔍 类型: {type(pois)}, 长度: {len(pois) if isinstance(pois, list) else 'N/A'}")
+        if isinstance(pois, list) and len(pois) > 0:
+            print(f"🔍 第一条数据: {pois[0]}")
+
+
         return POISearchResponse(
             success=True,
             message="POI搜索成功",
@@ -79,7 +86,7 @@ async def get_weather(
         service = get_amap_service()
         
         # 查询天气
-        weather_info = service.get_weather(city)
+        weather_info = service.weather(city)
         
         return WeatherResponse(
             success=True,

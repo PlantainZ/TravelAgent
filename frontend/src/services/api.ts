@@ -63,5 +63,61 @@ export async function healthCheck(): Promise<any> {
   }
 }
 
+
+// =============================尝试适配MapShow部分的新增poi=========================================
+
+/**
+ * 【新增】POI搜索结果类型定义
+ * 意义：为地图展示页面提供类型约束，确保前端能正确解析后端返回的POI数据
+ */
+export interface PoiResult {
+  name: string
+  address: string
+  location: string       // "lng,lat" 格式
+  type?: string
+  tel?: string
+  [key: string]: any
+}
+
+export interface PoiResponse {
+  success: boolean
+  message?: string
+  data: any              // MCP返回的原始数据，结构视高德接口而定
+}
+
+/**
+ * 【新增】搜索POI
+ * 意义：mapshow.vue 页面调用此函数，将搜索关键词传给后端，
+ *       后端通过高德MCP服务获取POI数据后返回给前端渲染地图
+ */
+export async function searchPoi(keywords: string, city: string = '北京'): Promise<PoiResponse> {
+  try {
+    const response = await apiClient.get<PoiResponse>('api/map/poi', {
+      params: { keywords, city },
+    })
+    return response.data
+  } catch (error: any) {
+    console.error('POI搜索失败:', error)
+    throw new Error(error.response?.data?.detail || error.message || 'POI搜索失败')
+  }
+}
+
+/**
+ * 【新增】获取MCP工具列表（调试用）
+ * 意义：开发阶段可在页面中查看所有可用的MCP工具名称和描述，
+ *       方便确认后端MCP连接是否正常
+ */
+export async function getMcpTools(): Promise<any> {
+  try {
+    const response = await apiClient.get('api/map/tools')
+    return response.data
+  } catch (error: any) {
+    console.error('获取MCP工具列表失败:', error)
+    throw new Error(error.message || '获取MCP工具列表失败')
+  }
+}
+
+// ======================== 新增结束 ========================
+
 export default apiClient
 

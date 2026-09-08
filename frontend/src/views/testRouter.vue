@@ -16,35 +16,7 @@
     >
       <div class="logo">
         <h2>档案详情</h2>
-      </div>          <!--这个可以不要-->
-
-      <!-- 你原来的 a-affix 固定导航 -->
-      <!-- <div class="side-nav">
-        <a-affix :offset-top="80">
-          <a-menu
-            v-model:selectedKeys="selectedKeys"
-            mode="inline"
-            @click="handleMenuClick"
-          >
-            <a-menu-item key="/">
-              <template #icon><HomeOutlined /></template>
-              <span>首页</span>
-            </a-menu-item>
-            <a-menu-item key="/testRouterComponent">
-              <template #icon><AppstoreOutlined /></template>
-              <span>testRouterComponent</span>
-            </a-menu-item>
-            <a-menu-item key="/about">
-              <template #icon><InfoCircleOutlined /></template>
-              <span>关于</span>
-            </a-menu-item>
-            <a-menu-item key="/contact">
-              <template #icon><MailOutlined /></template>
-              <span>联系我们</span>
-            </a-menu-item>
-          </a-menu>
-        </a-affix>
-      </div> -->
+      </div>
 
       <div v-if="tripPlan" class="side-nav">
         <a-affix :offset-top="80">
@@ -81,7 +53,7 @@
               <span>📋 特别活动</span>
             </a-menu-item>
 
-            <a-menu-item key="TeamQA">
+            <a-menu-item key="/TeamQA">
               <span>🔱组内Q&A</span>
             </a-menu-item>
 
@@ -93,8 +65,8 @@
               <!-- <span>💰 预算明细</span> -->
             <!-- </a-menu-item> -->
 
-            <a-menu-item key="map">
-              <span>景点地图</span>
+            <a-menu-item key="/MapShow">
+              <span>❄️行程设计</span>
             </a-menu-item>
 
             <!-- <a-menu-item key="weather" v-if="tripPlan.weather_info && tripPlan.weather_info.length > 0"> -->
@@ -108,6 +80,11 @@
           </a-menu>
         </a-affix>
       </div>
+
+
+
+
+
 
 
     </a-layout-sider>
@@ -141,12 +118,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import {
-  HomeOutlined,
-  AppstoreOutlined,
-  InfoCircleOutlined,
-  MailOutlined,
-} from '@ant-design/icons-vue'
+
 
 
 import type { TripPlan } from '@/types'

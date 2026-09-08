@@ -58,6 +58,11 @@ const router = createRouter({
           name:'TrvlEdit',
           component:()=>import('./views/ItineraryDetail/06_TrvlEdit/trvlEdit.vue')
         },
+          {
+          path:'/MapShow',
+          name:'MapShow',
+          component:()=>import('./views/ItineraryDetail/07_MapShow/mapTest.vue')
+        },
       ]
     },
     {

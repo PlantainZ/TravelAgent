@@ -5,7 +5,7 @@
 
 
     <!-- 行程内容 -->
-            <a-card title="📅 每日行程" :bordered="false" class="days-card">
+    <a-card v-if="tripPlan" title="📅 每日行程" :bordered="false" class="days-card">
           <a-collapse v-model:activeKey="activeDays" accordion>
             <a-collapse-panel v-for="(day, index) in tripPlan.days" :key="index" :id="`day-${index}`">
               <template #header>
@@ -123,11 +123,13 @@
 
 <script setup lang="ts">
 console.log('✅ trvlEdit mounted')
-import { ref, onMounted } from 'vue'
+import {ref, onMounted, nextTick} from 'vue'
 import {message} from "ant-design-vue";
 
 const tripPlan = ref<any>(null)
 const activeDays = ref<number[]>([0]) // 默认展开第一天
+const attractionPhotos = ref<Record<string, string>>({})
+
 const getMealLabel = (type: string): string => {
   const labels: Record<string, string> = {
     breakfast: '早餐',
@@ -139,12 +141,11 @@ const getMealLabel = (type: string): string => {
 }
 
 
-
-
-onMounted(() => {
+onMounted(async() => {
   const raw = sessionStorage.getItem('tripPlan')
   if (raw) {
     tripPlan.value = JSON.parse(raw)
+    await loadAttractionPhotos()
     console.log('trvlEdit 拿到数据:', tripPlan.value)
   } else {
     // 没有数据，提示用户回首页填写
@@ -187,6 +188,32 @@ const getAttractionImage = (name: string, index: number): string => {
   return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`
 }
 
+// 加载景点图片
+const loadAttractionPhotos = async () => {
+  if (!tripPlan.value) return
+
+  const promises: Promise<void>[] = []
+
+  tripPlan.value.days.forEach(day => {
+    day.attractions.forEach(attraction => {
+      const promise = fetch(`http://localhost:8000/api/poi/photo?name=${encodeURIComponent(attraction.name)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.data.photo_url) {
+            attractionPhotos.value[attraction.name] = data.data.photo_url
+          }
+        })
+        .catch(err => {
+          console.error(`获取${attraction.name}图片失败:`, err)
+        })
+
+      promises.push(promise)
+    })
+  })
+
+  await Promise.all(promises)
+}
+
 // 图片加载失败时的处理
 const handleImageError = (event: Event) => {
   const img = event.target as HTMLImageElement
@@ -198,3 +225,228 @@ const handleImageError = (event: Event) => {
 </script>
 
 <!-- 不要留下空的style scoped!!!!!会报错 -->
+<style scoped>
+
+/* 每日行程卡片 */
+.days-card {
+  margin-top: 20px;
+}
+
+.day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.day-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.day-date {
+  font-size: 14px;
+  color: #999;
+}
+
+.day-info {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+}
+
+.info-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.info-row:last-child {
+  margin-bottom: 0;
+}
+
+.info-row .label {
+  font-weight: 600;
+  color: #666;
+  min-width: 100px;
+}
+
+.info-row .value {
+  color: #333;
+  flex: 1;
+}
+
+/* 卡片样式优化 */
+:deep(.ant-card) {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+:deep(.ant-card:hover) {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+:deep(.ant-card-head) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white !important;
+  border-radius: 12px 12px 0 0;
+  font-weight: 600;
+}
+
+:deep(.ant-card-head-title) {
+  color: white !important;
+  font-size: 18px;
+}
+
+:deep(.ant-card-head-title span) {
+  color: white !important;
+}
+
+/* Collapse样式 */
+:deep(.ant-collapse) {
+  border: none;
+  background: transparent;
+}
+
+:deep(.ant-collapse-item) {
+  margin-bottom: 16px;
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+:deep(.ant-collapse-header) {
+  background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+  padding: 16px 20px !important;
+  font-weight: 600;
+}
+
+:deep(.ant-collapse-content) {
+  border-top: 1px solid #e8e8e8;
+}
+
+:deep(.ant-collapse-content-box) {
+  padding: 20px;
+}
+
+/* 统计卡片样式 */
+:deep(.ant-statistic-title) {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+:deep(.ant-statistic-content) {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1890ff;
+}
+
+/* 景点卡片样式 */
+:deep(.ant-list-item) {
+  transition: all 0.3s ease;
+}
+
+:deep(.ant-list-item:hover) {
+  transform: scale(1.02);
+}
+
+/* 动画 */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .result-container {
+    padding: 20px 10px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+
+
+
+/* 景点图片样式 */
+.attraction-image-wrapper {
+  position: relative;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.attraction-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.attraction-image-wrapper:hover .attraction-image {
+  transform: scale(1.05);
+}
+
+.attraction-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.badge-number {
+  font-size: 18px;
+}
+
+.price-tag {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 77, 79, 0.9);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+</style>
