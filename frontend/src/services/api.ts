@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { TripFormData, TripPlanResponse } from '@/types'
+import type { TripFormData, TripPlanResponse, PoiResult,PoiResponse} from '@/types'
 
 // api基础地址
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
@@ -67,25 +67,6 @@ export async function healthCheck(): Promise<any> {
 // =============================尝试适配MapShow部分的新增poi=========================================
 
 /**
- * 【新增】POI搜索结果类型定义
- * 意义：为地图展示页面提供类型约束，确保前端能正确解析后端返回的POI数据
- */
-export interface PoiResult {
-  name: string
-  address: string
-  location: string       // "lng,lat" 格式
-  type?: string
-  tel?: string
-  [key: string]: any
-}
-
-export interface PoiResponse {
-  success: boolean
-  message?: string
-  data: any              // MCP返回的原始数据，结构视高德接口而定
-}
-
-/**
  * 【新增】搜索POI
  * 意义：mapshow.vue 页面调用此函数，将搜索关键词传给后端，
  *       后端通过高德MCP服务获取POI数据后返回给前端渲染地图
@@ -119,5 +100,4 @@ export async function getMcpTools(): Promise<any> {
 
 // ======================== 新增结束 ========================
 
-export default apiClient
 

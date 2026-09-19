@@ -123,12 +123,13 @@
 
 <script setup lang="ts">
 console.log('✅ trvlEdit mounted')
-import {ref, onMounted, nextTick} from 'vue'
+import {ref, onMounted, } from 'vue'
 import {message} from "ant-design-vue";
 
 const tripPlan = ref<any>(null)
 const activeDays = ref<number[]>([0]) // 默认展开第一天
 const attractionPhotos = ref<Record<string, string>>({})
+
 
 const getMealLabel = (type: string): string => {
   const labels: Record<string, string> = {
@@ -145,14 +146,15 @@ onMounted(async() => {
   const raw = sessionStorage.getItem('tripPlan')
   if (raw) {
     tripPlan.value = JSON.parse(raw)
+
     await loadAttractionPhotos()
     console.log('trvlEdit 拿到数据:', tripPlan.value)
+
   } else {
     // 没有数据，提示用户回首页填写
     message.warning('暂无旅行计划数据，请先在首页生成')
   }
 })
-
 
 
 // 景点图片处理

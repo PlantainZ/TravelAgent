@@ -70,8 +70,9 @@
   </a-layout>
 </template>
 
+
 <script setup lang="ts" >
-import { ref, onMounted, onUnmounted, onBeforeUnmount } from 'vue'
+import {ref, onMounted, onUnmounted, onActivated, nextTick,} from 'vue'
 import AMapLoader from '@amap/amap-jsapi-loader'
 import { searchPoi } from '@/services/api.ts'
 import { message } from 'ant-design-vue'
@@ -82,9 +83,11 @@ const selectedCity = ref('北京')
 const loading = ref(false)
 const poiList = ref<any[]>([])
 
+
 let mapInstance: any = null
 let markers: any[] = []
 let AMapRef: any = null          // ✅ 新增：保存 AMap 引用供全局使用
+
 
 const currentMarker = ref(null) // ✅ 保存当前标记引用，避免重复创建
 // ==================== 地图初始化 ====================
@@ -106,6 +109,7 @@ onMounted(async () => {
     })
 
     console.log('✅ 地图初始化成功')
+    // await initMapSafely()
   } catch (e) {
     console.error('❌ 地图加载失败:', e)
     message.error('地图加载失败，请检查网络或Key配置')
@@ -179,6 +183,7 @@ function parsePoiData(data: any): any[] {
   console.warn('未识别的POI数据结构:', parsed)
   return []
 }
+
 
 // ==================== 地图打点 ====================
 function renderMarkers(pois: any[]) {

@@ -58,7 +58,7 @@
             </a-menu-item>
 
             <a-menu-item key="elseCheck">
-              <span>🚨其它调查</span>
+              <span>🚨数据库存取测试</span>
             </a-menu-item>
 
             <!-- <a-menu-item key="budget" v-if="tripPlan.budget"> -->
@@ -81,12 +81,6 @@
         </a-affix>
       </div>
 
-
-
-
-
-
-
     </a-layout-sider>
 
     <!-- ====== 右侧内容区域：参与渐隐渐显过渡 ====== -->
@@ -108,7 +102,7 @@
             :key="route.path" 确保不同路由的组件被视为不同元素，
             从而触发过渡动画（即使两个路由使用了相同组件）
           -->
-          <component :is="Component" :key="route.path" />
+              <component :is="Component" :key="route.path" />
         </Transition>
       </router-view>
     </a-layout-content>

@@ -142,3 +142,22 @@ export interface ShoppingList {
   /** 所有类别 */
   categories: Category[]
 }
+
+/**
+ * 【新增】POI搜索结果类型定义
+ * 意义：为地图展示页面提供类型约束，确保前端能正确解析后端返回的POI数据
+ */
+export interface PoiResult {
+  name: string
+  address: string
+  location: string       // "lng,lat" 格式
+  type?: string
+  tel?: string
+  [key: string]: any
+}
+
+export interface PoiResponse {
+  success: boolean
+  message?: string
+  data: any              // MCP返回的原始数据，结构视高德接口而定
+}

@@ -4,33 +4,39 @@
 
 原基础工程项介绍为：基于HelloAgents框架构建的智能旅行规划助手,集成高德地图MCP服务,提供个性化的旅行计划生成。
 
-## znn：路径标记
+## znn：开发版本标记
 
-v 0.0.0 ：地基
-- 学习LangChain、LangGraph、vue(vite、ant)、MCP、cursor & Zcode 使用、FastAPI
+v 0.3.1 ：postgreSQL
+- 初步设计表结构，并加入测试数据
+- 测试与postgreSQL的连接，并将读取到的数据显示在前端
+
+v 0.2.1 ：高德地图API接入
+- 在amap canvas中显示Agent生成的地点，并粗略标明顺序、天数。（待仔细调整）
+- 增加地图中的地点搜索、展示功能。
+- 加入地点位置精确标识：倒置水滴。
+- 准备接入postgre数据库...学习postgre操作
+
+v 0.1.1 ：旅行生成内容修缮
+- 对旅程内容单独提出作为一个页面。(trvlEdit.vue)
+
+v 0.1.0 ：LangGraph替代原生Agent框架成功！
+- 各接口功能测试均已通过。
+- 不再依赖原生HelloAgents！
+- 修缮前端的文件结构，使其有序。
+- 【产生问题】：生成速度有待改进。（尚未解决！！！！！！！！！！！）
+
+v 0.0.2 ：后端修改
+- 尝试Agent框架替换，学习接入
 
 v 0.0.1 ：前端示例页面作placeholder
 - Home和主页成分修改
 - 新增票务预约页面。
 - 新增物品显示页面
 
-v 0.0.2 ：后端修改
-- 尝试Agent框架替换，学习接入
+v 0.0.0 ：地基
+- 学习LangChain、LangGraph、vue(vite、ant)、MCP、cursor & Zcode 使用、FastAPI
 
-v 0.1.0 ：LangGraph替代原生Agent框架成功！
-- 各接口功能测试均已通过。
-- 不再依赖原生HelloAgents！
-- 修缮前端的文件结构，使其有序。
-- 【产生问题】：生成速度有待改进。
 
-v 0.1.1 ：旅行生成内容修缮
-- 对旅程内容单独提出作为一个页面。(trvlEdit.vue)
-
-v 0.2.1 ：高德地图API接入
-- 在amap canvas中显示Agent生成的地点，并粗略标明顺序、天数。（待仔细调整）
-- 增加地图中的地点搜索、展示功能。
-- 加入地点位置精确标识：倒置水滴。
-- 准备接入postgre数据库...
 
 ## ✨ 功能特点
 
